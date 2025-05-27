@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import yaml from "js-yaml";
 import https from "node:https";
+import { createReadStream } from "node:fs";
 import { resolve } from "node:path";
 import process from "node:process";
 import { z } from "zod";
@@ -16,7 +17,7 @@ export const server = new McpServer({
 // Setup environment variables for Mailjet API access
 const API_KEY = process.env.MAILJET_API_KEY;
 const API_HOSTNAME = "api.mailjet.com";
-const OPENAPI_SPEC = resolve(__dirname, "..", "mailjet-openapi.yaml");
+const OPENAPI_SPEC = resolve(__dirname, "mailjet-openapi.yaml");
 
 /** Supported Mailjet API endpoints */
 const endpoints = {
@@ -132,8 +133,97 @@ const endpoints = {
   /** @type {readonly string[]} PUT - List of PUT endpoints supported by the API */
   PUT: [],
   /** @type {readonly string[]} POST - List of POST endpoints supported by the API */
-  POST: [
-    "/v3/send",
-    "/v3.1/send",
-  ],
+  POST: ["/v3/send", "/v3.1/send"],
 };
+
+/**
+ * Loads and parses the OpenAPI specification from a YAML file
+ * @param {string} filePath - Path to the OpenAPI YAML file
+ * @returns {Promise<unknown>} - Parsed OpenAPI specification
+ */
+export async function loadOpenApiSpec(filePath) {
+  try {
+    const streamedFile = createReadStream(filePath, { encoding: "utf-8" });
+
+    /** @type {string} file contents read into a string */
+    const contents = await new Promise((resolve, reject) => {
+      let data = "";
+      streamedFile.on("data", (chunk) => {
+        data += chunk;
+      });
+      streamedFile.on("end", () => {
+        resolve(data);
+      });
+      streamedFile.on("error", (err) => {
+        reject(err);
+      });
+    });
+
+    return yaml.load(contents);
+  } catch (/** @type {any} */error) {
+    console.error(`Error loading OpenAPI spec: ${error.message}`);
+    // Don't exit in test mode
+    if (process.env.NODE_ENV !== "test") {
+      process.exit(1);
+    }
+    throw error; // Throw so tests can catch it
+  }
+}
+
+/**
+ * Generates MCP tools from the OpenAPI specification
+ * @param {Object} openApiSpec - Parsed OpenAPI specification
+ */
+export function generateToolsFromOpenApi(openApiSpec) {
+  for (const endpoint of endpoints) {
+    try {
+      const [method, path] = endpoint.split(' ');
+      const operationDetails = getOperationDetails(openApiSpec, method, path);
+
+      if (!operationDetails) {
+        console.warn(`Could not match endpoint: ${method} ${path} in OpenAPI spec`);
+        continue;
+      }
+
+      const { operation, operationId } = operationDetails;
+      const paramsSchema = buildParamsSchema(operation, openApiSpec);
+      const toolId = sanitizeToolId(operationId);
+      const toolDescription = operation.summary || `${method.toUpperCase()} ${path}`;
+
+      registerTool(toolId, toolDescription, paramsSchema, method, path, operation);
+
+    } catch (/** @type {any} */ error) {
+      console.error(`Failed to process endpoint ${method} ${path}: ${error.message}`);
+    }
+  }
+
+  return;
+}
+
+/**
+ * Main function to initialize and start the MCP server
+ */
+export async function main() {
+  try {
+    // Load and parse OpenAPI spec
+    const openApiSpec = await loadOpenApiSpec(OPENAPI_SPEC);
+
+    // Generate tools from the spec
+    generateToolsFromOpenApi(openApiSpec);
+
+    // Connect to the transport
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    console.log("Mailjet MCP Server running on stdio");
+  } catch (error) {
+    console.error("Fatal error in main():", error);
+    if (process.env.NODE_ENV !== "test") {
+      process.exit(1);
+    }
+  }
+}
+
+// Only auto-execute when not in test environment
+if (process.env.NODE_ENV !== "test") {
+  main();
+}
