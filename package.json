@@ -19,9 +19,10 @@
     "zod": "^3.25.30"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.17.50"
   },
-  "engines" : {
-     "node" : ">=20.10.0"
-   }
+  "engines": {
+    "node": ">=20.10.0"
+  }
 }

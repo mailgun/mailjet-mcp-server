@@ -5,7 +5,8 @@ import https from "node:https";
 import { createReadStream } from "node:fs";
 import { resolve } from "node:path";
 import process from "node:process";
-import { z } from "zod";
+import { z } from "zod/v4";
+import { MailjetApiSchema } from "./mailjet-openapi-schema.js";
 
 const __dirname = import.meta.dirname;
 
@@ -172,12 +173,12 @@ export async function loadOpenApiSpec(filePath) {
 
 /**
  * Generates MCP tools from the OpenAPI specification
- * @param {Object} openApiSpec - Parsed OpenAPI specification
+ * @param {z.infer<typeof MailjetApiSchema>} openApiSpec - Parsed OpenAPI specification
  */
 export function generateToolsFromOpenApi(openApiSpec) {
-  for (const endpoint of endpoints) {
+  for (const path of endpoints.GET) {
+    const method = 'GET'
     try {
-      const [method, path] = endpoint.split(' ');
       const operationDetails = getOperationDetails(openApiSpec, method, path);
 
       if (!operationDetails) {
@@ -208,8 +209,15 @@ export async function main() {
     // Load and parse OpenAPI spec
     const openApiSpec = await loadOpenApiSpec(OPENAPI_SPEC);
 
-    // Generate tools from the spec
-    generateToolsFromOpenApi(openApiSpec);
+    try {
+      const parsedOpenApiSpec = MailjetApiSchema.parse(openApiSpec)
+
+      // Generate tools from the spec
+      generateToolsFromOpenApi(parsedOpenApiSpec);
+
+    } catch(/** @type { any } */ error ) {
+      throw Error(error)
+    }
 
     // Connect to the transport
     const transport = new StdioServerTransport();
