@@ -1,5 +1,19 @@
 import { z } from "zod/v4";
 
+z.config(z.locales.en());
+
+const methodParams = z.object({
+  name: z.string(),
+  in: z.string(),
+  required: z.boolean().optional(),
+  schema: z.object({ type: z.string() }),
+});
+const requestMethod = z.object({
+  description: z.string().optional(),
+  parameters: z.array(methodParams).optional(),
+  responses: z.object({})
+}).catchall(z.any()).optional()
+
 export const MailjetApiSchema = z.object({
   openapi: z.string(),
   info: z.object({
@@ -15,11 +29,18 @@ export const MailjetApiSchema = z.object({
   ),
   paths: z.record(
     z.templateLiteral([z.enum(["/v3/REST", "/v4/sms", "/v3/send", "/v3.1/send"]), z.string()]),
-    z.record(
-      z.enum(["get", "post", "put", "delete"]),
-      z.object({}).catchall(z.any()),
-    ).and(
-      z.record(z.literal("parameters"), z.array(z.any())),
-    )
-  )
+    z.object({
+      get: requestMethod,
+      post: requestMethod,
+      put: requestMethod,
+      delete: requestMethod,
+      parameters: z.array(methodParams).optional(),
+    }),
+  ),
+  tags: z.array(
+    z.object({
+      name: z.string(),
+      description: z.string().optional(),
+    }),
+  ),
 });
