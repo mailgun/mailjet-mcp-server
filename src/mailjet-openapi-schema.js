@@ -7,12 +7,22 @@ const methodParams = z.object({
   in: z.string(),
   required: z.boolean().optional(),
   schema: z.object({ type: z.string() }),
+  $ref: z.string().optional(),
 });
-const requestMethod = z.object({
-  description: z.string().optional(),
-  parameters: z.array(methodParams).optional(),
-  responses: z.object({})
-}).catchall(z.any()).optional()
+const reqBodyContent = z.partialRecord(z.string(), z.object({
+  schema: z.object({}).catchall(z.any()).optional(),
+  examples: z.object({}).catchall(z.any()).optional(),
+}))
+const requestMethod = z
+  .object({
+    description: z.string().optional(),
+    parameters: z.array(methodParams).optional(),
+    requestBody: z.object({ content: reqBodyContent.optional() }),
+    responses: z.object({}).catchall(z.any()),
+    summary: z.string().optional(),
+  })
+  .catchall(z.any())
+  .optional();
 
 export const MailjetApiSchema = z.object({
   openapi: z.string(),
@@ -28,7 +38,9 @@ export const MailjetApiSchema = z.object({
     }),
   ),
   paths: z.record(
-    z.templateLiteral([z.enum(["/v3/REST", "/v4/sms", "/v3/send", "/v3.1/send"]), z.string()]),
+    // Accurate types are more trouble than they're worth right now
+    // z.templateLiteral([z.enum(["/v3/REST", "/v4/sms", "/v3/send", "/v3.1/send"]), z.string()]),
+    z.string(),
     z.object({
       get: requestMethod,
       post: requestMethod,

@@ -57,12 +57,10 @@ const endpoints = {
     "/v3/REST/campaigndraft/{draft_ID}",
     "/v3/REST/campaigndraft/{draft_ID}/detailcontent",
     "/v3/REST/campaigndraft/{draft_ID}/schedule",
-    "/v3/REST/campaigndraft/{draft_ID}status",
+    "/v3/REST/campaigndraft/{draft_ID}/status",
     "/v3/REST/campaignoverview",
-    "/v3/REST/campaignoverview/{ID}",
-    "/v3/REST/campaignoverview/{IDType}",
+    "/v3/REST/campaignoverview/{IDType}|{ID}",
     // SEGMENTATION API
-    "/v3/REST/contactfilter",
     "/v3/REST/contactfilter",
     "/v3/REST/contactfilter/{contactfilter_ID}",
     // TEMPLATES API
@@ -161,7 +159,7 @@ export async function loadOpenApiSpec(filePath) {
     });
 
     return yaml.load(contents);
-  } catch (/** @type {any} */error) {
+  } catch (/** @type {any} */ error) {
     console.error(`Error loading OpenAPI spec: ${error.message}`);
     // Don't exit in test mode
     if (process.env.NODE_ENV !== "test") {
@@ -177,7 +175,7 @@ export async function loadOpenApiSpec(filePath) {
  */
 export function generateToolsFromOpenApi(openApiSpec) {
   for (const path of endpoints.GET) {
-    const method = 'GET'
+    const method = "GET";
     try {
       const operationDetails = getOperationDetails(openApiSpec, method, path);
 
@@ -189,10 +187,9 @@ export function generateToolsFromOpenApi(openApiSpec) {
       const { operation, operationId } = operationDetails;
       const paramsSchema = buildParamsSchema(operation, openApiSpec);
       const toolId = sanitizeToolId(operationId);
-      const toolDescription = operation.summary || `${method.toUpperCase()} ${path}`;
+      const toolDescription = operation?.summary || `${method.toUpperCase()} ${path}`;
 
       registerTool(toolId, toolDescription, paramsSchema, method, path, operation);
-
     } catch (/** @type {any} */ error) {
       console.error(`Failed to process endpoint ${method} ${path}: ${error.message}`);
     }
@@ -210,13 +207,12 @@ export async function main() {
     const openApiSpec = await loadOpenApiSpec(OPENAPI_SPEC);
 
     try {
-      const parsedOpenApiSpec = MailjetApiSchema.parse(openApiSpec)
+      const parsedOpenApiSpec = MailjetApiSchema.parse(openApiSpec);
 
       // Generate tools from the spec
       generateToolsFromOpenApi(parsedOpenApiSpec);
-
-    } catch(/** @type { any } */ error ) {
-      throw Error(error)
+    } catch (/** @type { any } */ error) {
+      throw Error(error);
     }
 
     // Connect to the transport
