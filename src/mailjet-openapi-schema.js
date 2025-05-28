@@ -15,9 +15,9 @@ const reqBodyContent = z.partialRecord(z.string(), z.object({
 }))
 const requestMethod = z
   .object({
-    description: z.string().optional(),
+    description: z.string(),
     parameters: z.array(methodParams).optional(),
-    requestBody: z.object({ content: reqBodyContent.optional() }),
+    requestBody: z.object({ content: reqBodyContent }).optional(),
     responses: z.object({}).catchall(z.any()),
     summary: z.string().optional(),
   })
