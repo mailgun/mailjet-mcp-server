@@ -343,39 +343,30 @@ export function processRequestBody(requestBody, paramsSchema, openApiSpec) {
     return;
   }
 
-  // Try different content types in priority order
-  const contentTypes = [
-    "application/json",
-  ];
+  // All requests are currently JSON
+  const contentType = "application/json";
 
-  for (const contentType of contentTypes) {
-    if (!requestBody.content[contentType]) {
-      continue;
-    }
+  let bodySchema = requestBody.content[contentType].schema;
 
-    let bodySchema = requestBody.content[contentType].schema;
+  // TODO: Remove if not needed
+  // Handle schema references.
+  if (bodySchema?.$ref) {
+    bodySchema = resolveReference(bodySchema.$ref, openApiSpec);
+  }
 
-    // Handle schema references
-    if (bodySchema?.$ref) {
-      bodySchema = resolveReference(bodySchema.$ref, openApiSpec);
-    }
+  // Process schema properties
+  if (bodySchema?.properties) {
+    for (const [prop, schema] of Object.entries(bodySchema.properties)) {
+      let propSchema = schema;
 
-    // Process schema properties
-    if (bodySchema?.properties) {
-      for (const [prop, schema] of Object.entries(bodySchema.properties)) {
-        let propSchema = schema;
-
-        // Handle nested references
-        if (propSchema.$ref) {
-          propSchema = resolveReference(propSchema.$ref, openApiSpec);
-        }
-
-        const zodProp = openapiToZod(propSchema, openApiSpec);
-        paramsSchema[prop] = bodySchema?.required?.includes(prop) ? zodProp : zodProp.optional();
+      // Handle nested references
+      if (propSchema.$ref) {
+        propSchema = resolveReference(propSchema.$ref, openApiSpec);
       }
-    }
 
-    break; // We found and processed a content type
+      const zodProp = openapiToZod(propSchema, openApiSpec);
+      paramsSchema[prop] = bodySchema?.required?.includes(prop) ? zodProp : zodProp.optional();
+    }
   }
 }
 
@@ -496,7 +487,7 @@ export function appendQueryString(path, queryParams) {
 }
 
 /**
- * Makes an authenticated request to the Mailgun API
+ * Makes an authenticated request to the Mailjet API
  * @param {keyof typeof endpoints} method - HTTP method (GET, POST, etc.)
  * @param {string} path - API endpoint path
  * @param {Record<string, string | number> | null} data - Request payload data (for POST/PUT requests)
@@ -512,14 +503,14 @@ export async function makeMailjetRequest(method, path, data = null) {
     }
 
     // Create basic auth credentials from API key
-    const auth = Buffer.from(`api:${API_KEY}`).toString("base64");
+    const auth = Buffer.from(`${API_KEY}`).toString("base64");
     const options = {
       hostname: API_HOSTNAME,
       path: `/${cleanPath}`,
       method: method,
       headers: {
         Authorization: `Basic ${auth}`,
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
       },
     };
 
@@ -537,7 +528,7 @@ export async function makeMailjetRequest(method, path, data = null) {
           if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
             resolve(parsedData);
           } else {
-            reject(new Error(`Mailgun API error: ${parsedData.message || responseData}`));
+            reject(new Error(`Mailjet API error: ${parsedData.message || responseData}`));
           }
         } catch (/** @type any */ e) {
           reject(new Error(`Failed to parse response: ${e.message}`));
@@ -580,7 +571,7 @@ export async function makeMailjetRequest(method, path, data = null) {
  * @param {NonNullable<ReturnType<typeof getOperationDetails>>['operation']} operation - OpenAPI operation object
  */
 export function registerTool(toolId, toolDescription, paramsSchema, method, path, operation) {
-  server.tool(toolId, toolDescription, paramsSchema, async (params) => {
+  server.tool(toolId, toolDescription, {query: paramsSchema}, async (params) => {
     try {
       const { actualPath, remainingParams } = processPathParameters(path, operation, params);
       const { queryParams, bodyParams } = separateParameters(remainingParams, operation, method);
@@ -663,7 +654,8 @@ export async function main() {
     // Connect to the transport
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.log("Mailjet MCP Server running on stdio");
+    // Send to console.error to avoid error on server startup
+    console.error("Mailjet MCP Server running on stdio");
   } catch (error) {
     console.error("Fatal error in main():", error);
     if (process.env.NODE_ENV !== "test") {
