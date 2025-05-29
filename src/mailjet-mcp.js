@@ -15,10 +15,14 @@ export const server = new McpServer({
   version: "1.0.0",
 });
 
-// Setup environment variables for Mailjet API access
+// Mailjet API authentication credentials in the documented BASIC Auth form "api_key:secret_key"
 const API_KEY = process.env.MAILJET_API_KEY;
-const API_HOSTNAME = "api.mailjet.com";
-const OPENAPI_SPEC = resolve(__dirname, "mailjet-openapi.yaml");
+// Alternate non-US region of the API server
+const API_REGION = process.env.MAILJET_API_REGION?.toLowerCase();
+// API server hostname based on region
+const API_HOSTNAME = `api.${API_REGION ? `${API_REGION}.` : ''}mailjet.com`;
+// Path to openapi spec file
+const OPENAPI_SPEC = resolve(__dirname, "openapi-mailjet.yaml");
 
 /** Supported Mailjet API endpoints */
 const endpoints = {
