@@ -7,9 +7,9 @@ info:
   version: 1.0.0
   contact: {}
 servers:
-  - url: https://api.mailgun.net
+  - url: https://api.mailjet.com
     description: US Mailjet
-  - url: https://api.eu.mailjet.net
+  - url: https://api.eu.mailjet.com
     description: EU Mailjet
 paths:
   /v3.1/send:

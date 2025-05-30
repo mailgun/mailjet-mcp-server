@@ -10,8 +10,8 @@ This project provides a Model Context Protocol (MCP) server for the [Mailjet API
 ### Manual Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/mailgun/mailgun-mcp-server.git
-   cd mailgun-mcp-server
+   git clone https://github.com/mailgun/mailjet-mcp-server.git
+   cd mailjet-mcp-server
    ```
 
 2. Install dependencies and build:
@@ -36,9 +36,9 @@ node src/mailjet-mcp.js
    ```json
    {
        "mcpServers": {
-           "mailgun": {
+           "mailjet": {
                "command": "node",
-               "args": ["CHANGE/THIS/PATH/TO/mailgun-mcp-server/src/mailgun-mcp.js"],
+               "args": ["CHANGE/THIS/PATH/TO/mailjet-mcp-server/src/mailjet-mcp.js"],
                "env": {
                    "MAILJET_API_KEY": "YOUR_api_key:YOUR_secret_key"
                }
