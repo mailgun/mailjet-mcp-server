@@ -16,7 +16,7 @@ This project provides a Model Context Protocol (MCP) server for the [Mailjet API
 
 2. Install dependencies and build:
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. Configure Claude Desktop:
@@ -56,15 +56,15 @@ MAILJET_API_KEY="your_api_key:your_secret_key" # REQUIRED, used for authenticati
 MAILJET_API_REGION="eu" # OPTIONAL, used to change to the EU servers, if desired
 ```
 
-<!--
+
 ## Testing
 
 Run the local test suite with:
 
 ```bash
-NODE_ENV=test npm test
+NODE_ENV=test pnpm test
 ```
--->
+
 
 ### Sample Prompts with Claude
 

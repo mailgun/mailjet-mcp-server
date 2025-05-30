@@ -75,7 +75,7 @@ describe("processPathParameters", () => {
     const { actualPath, remainingParams } = serverModule.processPathParameters(
       "/foo/{id}/bar",
       operation,
-      params
+      params,
     );
     assert.strictEqual(actualPath, "/foo/123/bar");
     assert.deepStrictEqual(remainingParams, { q: "abc" });
@@ -83,7 +83,7 @@ describe("processPathParameters", () => {
   it("should throw if required path param missing", () => {
     assert.throws(
       () => serverModule.processPathParameters("/foo/{id}/bar", operation, { q: "abc" }),
-      /Required path parameter 'id' is missing/
+      /Required path parameter 'id' is missing/,
     );
   });
 });
@@ -111,20 +111,12 @@ describe("separateParameters", () => {
 
 describe("getOperationDetails", () => {
   it("should return operation details if found", () => {
-    const result = serverModule.getOperationDetails(
-      mockOpenApiSpec,
-      "GET",
-      "/v3/REST/message"
-    );
+    const result = serverModule.getOperationDetails(mockOpenApiSpec, "GET", "/v3/REST/message");
     assert(result);
     assert.strictEqual(result.operation.summary, "Get message");
   });
   it("should return null if not found", () => {
-    const result = serverModule.getOperationDetails(
-      mockOpenApiSpec,
-      "POST",
-      "/v3/REST/message"
-    );
+    const result = serverModule.getOperationDetails(mockOpenApiSpec, "POST", "/v3/REST/message");
     assert.strictEqual(result, null);
   });
 });
@@ -229,7 +221,7 @@ describe("openapiToZod", () => {
   it("should convert array schema", () => {
     const zod = serverModule.openapiToZod(
       { type: "array", items: { type: "string" } },
-      mockOpenApiSpec
+      mockOpenApiSpec,
     );
     assert(zod);
     assert.strictEqual(zod.def.type, "array");
@@ -241,7 +233,7 @@ describe("openapiToZod", () => {
         properties: { foo: { type: "string" } },
         required: ["foo"],
       },
-      mockOpenApiSpec
+      mockOpenApiSpec,
     );
     assert(zod);
     assert.strictEqual(zod.def.type, "object");
@@ -249,7 +241,7 @@ describe("openapiToZod", () => {
   it("should resolve $ref", () => {
     const zod = serverModule.openapiToZod(
       { $ref: "#/components/schemas/TestSchema" },
-      mockOpenApiSpec
+      mockOpenApiSpec,
     );
     assert(zod);
     assert.strictEqual(zod.def.type, "object");
