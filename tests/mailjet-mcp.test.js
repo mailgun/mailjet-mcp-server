@@ -247,3 +247,6 @@ describe("openapiToZod", () => {
     assert.strictEqual(zod.def.type, "object");
   });
 });
+
+// --- Integration tests ---
+
