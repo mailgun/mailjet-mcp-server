@@ -17,9 +17,11 @@ const requestMethod = z
   .object({
     description: z.string(),
     parameters: z.array(methodParams).optional(),
+    operationId: z.string().optional(),
     requestBody: z.object({ content: reqBodyContent }).optional(),
     responses: z.object({}).catchall(z.any()),
     summary: z.string().optional(),
+    tags: z.array(z.string()).optional(),
   })
   .catchall(z.any())
   .optional();

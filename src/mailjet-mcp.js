@@ -123,7 +123,7 @@ export function getOperationDetails(openApiSpec, method, path) {
     /** @type {NonNullable<z.infer<typeof MailjetApiSchema>["paths"][string]["delete" | "get" | "post" | "put"]>} */
     // @ts-ignore We know this exists because of the if condition above
     operation: openApiSpec.paths[path][lowerMethod],
-    operationId: `${method}-${sanitizeToolId(path).replace(/-+/g, "-")}`,
+    operationId: openApiSpec.paths[path]["get"]?.operationId ?? `${method}-${sanitizeToolId(path).replace(/-+/g, "-")}`,
   };
 }
 
