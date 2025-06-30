@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2018",
-    "module": "Node16",
+    "module": "NodeNext",
     "moduleResolution": "Node16",
     "checkJs": true,
     "declaration": true,

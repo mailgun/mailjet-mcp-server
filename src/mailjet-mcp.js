@@ -13,7 +13,7 @@ const __dirname = import.meta.dirname;
 
 export const server = new McpServer({
   name: "mailjet",
-  version: "1.0.0",
+  version: packageInfo.version,
 });
 
 // Mailjet API authentication credentials in the documented BASIC Auth form "api_key:secret_key"
@@ -435,7 +435,7 @@ export async function makeMailjetRequest(method, path, data = null) {
     const cleanPath = path.startsWith("/") ? path.substring(1) : path;
 
     if (!API_KEY) {
-      throw new Error(`Required API_KEY environment variable is missing`);
+      throw new Error(`Required MAILJET_API_KEY environment variable is missing`);
     }
 
     // Create basic auth credentials from API key
@@ -593,8 +593,9 @@ export async function main() {
     // Connect to the transport
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    // Send to console.error to avoid error on server startup
-    console.error("Mailjet MCP Server running on stdio");
+    // This is an STDIO server and log msgs are sent to stdio by default
+    // So send to console.error to avoid errors on server startup
+    console.error(`Mailjet MCP Server ${packageInfo.version} running on stdio`);
   } catch (error) {
     console.error("Fatal error in main():", error);
     if (process.env.NODE_ENV !== "test") {
