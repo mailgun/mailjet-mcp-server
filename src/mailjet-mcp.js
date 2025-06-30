@@ -7,6 +7,7 @@ import { resolve } from "node:path";
 import process from "node:process";
 import { z } from "zod/v4";
 import { MailjetApiSchema } from "./mailjet-openapi-schema.js";
+import packageInfo from "../package.json" with { type: "json" };
 
 const __dirname = import.meta.dirname;
 
@@ -446,6 +447,7 @@ export async function makeMailjetRequest(method, path, data = null) {
       headers: {
         Authorization: `Basic ${auth}`,
         "Content-Type": "application/json",
+        "User-Agent": `Mailjet/MCP-SERVER-STDIO/${packageInfo.version}`
       },
     };
 
