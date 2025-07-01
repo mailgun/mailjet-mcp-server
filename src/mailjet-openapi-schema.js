@@ -1,6 +1,7 @@
-import { z } from "zod/v4";
+import { z } from "zod/v3";
 
-z.config(z.locales.en());
+// Only for use w/ zod v4
+// z.config(z.locales.en());
 
 const methodParams = z.object({
   name: z.string(),
@@ -9,7 +10,7 @@ const methodParams = z.object({
   schema: z.object({ type: z.string() }),
   $ref: z.string().optional(),
 });
-const reqBodyContent = z.partialRecord(z.string(), z.object({
+const reqBodyContent = z.record(z.string(), z.object({
   schema: z.object({}).catchall(z.any()).optional(),
   examples: z.object({}).catchall(z.any()).optional(),
 }))

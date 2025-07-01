@@ -5,7 +5,7 @@ import https from "node:https";
 import { createReadStream } from "node:fs";
 import { resolve } from "node:path";
 import process from "node:process";
-import { z } from "zod/v4";
+import { z } from "zod/v3";
 import { MailjetApiSchema } from "./mailjet-openapi-schema.js";
 import packageInfo from "../package.json" with { type: "json" };
 
@@ -206,7 +206,7 @@ export function openapiToZod(schema, fullSpec) {
         return z.record(z.any(), z.any());
       }
 
-      /** @type Record<string, unknown> */
+      /** @type Record<string, z.ZodType> */
       const shape = {};
       for (const [key, prop] of Object.entries(schema.properties)) {
         shape[key] = schema.required?.includes(key)
@@ -218,7 +218,7 @@ export function openapiToZod(schema, fullSpec) {
     default:
       // For schemas without a type but with properties
       if (schema.properties) {
-        /** @type Record<string, unknown> */
+        /** @type Record<string, z.ZodType> */
         const shape = {};
         for (const [key, prop] of Object.entries(schema.properties)) {
           shape[key] = schema.required?.includes(key)
@@ -508,7 +508,7 @@ export async function makeMailjetRequest(method, path, data = null) {
  * @param {NonNullable<ReturnType<typeof getOperationDetails>>['operation']} operation - OpenAPI operation object
  */
 export function registerTool(toolId, toolDescription, paramsSchema, method, path, operation) {
-  server.tool(toolId, toolDescription, { query: paramsSchema }, async (params) => {
+  server.tool(toolId, toolDescription, paramsSchema, async (params) => {
     try {
       const { actualPath, remainingParams } = processPathParameters(path, operation, params);
       const { queryParams, bodyParams } = separateParameters(remainingParams, operation, method);
