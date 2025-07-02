@@ -201,22 +201,22 @@ describe("openapiToZod", () => {
   it("should convert string schema", () => {
     const zod = serverModule.openapiToZod({ type: "string" }, mockOpenApiSpec);
     assert(zod);
-    assert.strictEqual(zod.def.type, "string");
+    assert.strictEqual(zod._def.typeName, "ZodString");
   });
   it("should convert enum schema", () => {
     const zod = serverModule.openapiToZod({ type: "string", enum: ["a", "b"] }, mockOpenApiSpec);
     assert(zod);
-    assert.strictEqual(zod.def.type, "enum");
+    assert.strictEqual(zod._def.typeName, "ZodEnum");
   });
   it("should convert number schema", () => {
     const zod = serverModule.openapiToZod({ type: "number" }, mockOpenApiSpec);
     assert(zod);
-    assert.strictEqual(zod.def.type, "number");
+    assert.strictEqual(zod._def.typeName, "ZodNumber");
   });
   it("should convert boolean schema", () => {
     const zod = serverModule.openapiToZod({ type: "boolean" }, mockOpenApiSpec);
     assert(zod);
-    assert.strictEqual(zod.def.type, "boolean");
+    assert.strictEqual(zod._def.typeName, "ZodBoolean");
   });
   it("should convert array schema", () => {
     const zod = serverModule.openapiToZod(
@@ -224,7 +224,7 @@ describe("openapiToZod", () => {
       mockOpenApiSpec,
     );
     assert(zod);
-    assert.strictEqual(zod.def.type, "array");
+    assert.strictEqual(zod._def.typeName, "ZodArray");
   });
   it("should convert object schema", () => {
     const zod = serverModule.openapiToZod(
@@ -236,7 +236,7 @@ describe("openapiToZod", () => {
       mockOpenApiSpec,
     );
     assert(zod);
-    assert.strictEqual(zod.def.type, "object");
+    assert.strictEqual(zod._def.typeName, "ZodObject");
   });
   it("should resolve $ref", () => {
     const zod = serverModule.openapiToZod(
@@ -244,6 +244,6 @@ describe("openapiToZod", () => {
       mockOpenApiSpec,
     );
     assert(zod);
-    assert.strictEqual(zod.def.type, "object");
+    assert.strictEqual(zod._def.typeName, "ZodObject");
   });
 });
