@@ -3,7 +3,7 @@
 
 ## Overview
 
-This project provides a Model Context Protocol (MCP) server for the [Mailjet API](https://www.mailjet.com), enabling compatible AI agents (e.g. Claude Desktop) to interact with Mailjet's email, SMS, contact, campaign, segmentation and statistics APIs through a standardized tool interface.
+This project provides a Model Context Protocol (MCP) server for the [Mailjet API](https://www.mailjet.com), enabling compatible AI agents (e.g. Claude Desktop) to interact with Mailjet's contact, campaign, segmentation, statistics, workflow (and more) APIs through a standardized tool interface.
 
 ## Quick Start
 
