@@ -58,7 +58,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -81,7 +81,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/activitycountersCollectionSchema"
+                $ref: "#/components/schemas/activitycountersResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -117,7 +117,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -140,7 +140,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/aggregategraphstatisticsCollectionSchema"
+                $ref: "#/components/schemas/aggregategraphstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -206,7 +206,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -229,7 +229,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apikeyCollectionSchema"
+                $ref: "#/components/schemas/apikeyResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -297,7 +297,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apikeyCollectionSchema"
+                $ref: "#/components/schemas/apikeyResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -363,7 +363,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apikeyCollectionSchema"
+                $ref: "#/components/schemas/apikeyResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -384,14 +384,21 @@ paths:
         - Settings
       summary: Get a specific apikey by ID
       description: Retrieve a single apikey resource by its ID
-      operationId: get_v3_apikey_apikey_id
+      operationId: get_v3_apikey_id
+      parameters:
+        - name: apikey_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apikeyCollectionSchema"
+                $ref: "#/components/schemas/apikeyResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -406,13 +413,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: apikey_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/apikeyaccess:
     get:
       tags:
@@ -459,7 +459,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -482,7 +482,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apikeyaccessCollectionSchema"
+                $ref: "#/components/schemas/apikeyaccessResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -503,14 +503,21 @@ paths:
         - Settings
       summary: Get a specific apikeyaccess by ID
       description: Retrieve a single apikeyaccess resource by its ID
-      operationId: get_v3_apikeyaccess_apikeyaccess_id
+      operationId: get_v3_apikeyaccess_id
+      parameters:
+        - name: apikeyaccess_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apikeyaccessCollectionSchema"
+                $ref: "#/components/schemas/apikeyaccessResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -525,13 +532,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: apikeyaccess_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/apikeyaccessgrantor:
     get:
       tags:
@@ -563,7 +563,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -586,7 +586,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apikeyaccessgrantorCollectionSchema"
+                $ref: "#/components/schemas/apikeyaccessgrantorResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -607,14 +607,21 @@ paths:
         - Settings
       summary: Get a specific apikeyaccessgrantor by ID
       description: Retrieve a single apikeyaccessgrantor resource by its ID
-      operationId: get_v3_apikeyaccessgrantor_apikeyaccessgrantor_id
+      operationId: get_v3_apikeyaccessgrantor_id
+      parameters:
+        - name: apikeyaccessgrantor_ID
+          in: path
+          schema:
+            type: string
+          description: Unique identifier for this access grantor record.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apikeyaccessgrantorCollectionSchema"
+                $ref: "#/components/schemas/apikeyaccessgrantorResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -629,13 +636,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: apikeyaccessgrantor_ID
-        in: path
-        schema:
-          type: string
-        description: Unique identifier for this access grantor record.
-        required: true
   /v3/REST/apikeytotals:
     get:
       tags:
@@ -648,7 +648,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -671,7 +671,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apikeytotalsCollectionSchema"
+                $ref: "#/components/schemas/apikeytotalsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -693,14 +693,21 @@ paths:
         - Settings
       summary: Get a specific apikeytotals by ID
       description: Retrieve a single apikeytotals resource by its ID
-      operationId: get_v3_apikeytotals_apikeytotals_id
+      operationId: get_v3_apikeytotals_id
+      parameters:
+        - name: apikeytotals_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apikeytotalsCollectionSchema"
+                $ref: "#/components/schemas/apikeytotalsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -715,13 +722,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: apikeytotals_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/apitoken:
     get:
       tags:
@@ -758,7 +758,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -781,7 +781,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apitokenCollectionSchema"
+                $ref: "#/components/schemas/apitokenResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -883,7 +883,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apitokenCollectionSchema"
+                $ref: "#/components/schemas/apitokenResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -934,7 +934,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apitokenCollectionSchema"
+                $ref: "#/components/schemas/apitokenResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -955,14 +955,21 @@ paths:
         - Settings
       summary: Get a specific apitoken by ID
       description: Retrieve a single apitoken resource by its ID
-      operationId: get_v3_apitoken_apitoken_id
+      operationId: get_v3_apitoken_id
+      parameters:
+        - name: apitoken_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apitokenCollectionSchema"
+                $ref: "#/components/schemas/apitokenResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -977,13 +984,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: apitoken_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/apppreferences:
     get:
       tags:
@@ -1045,7 +1045,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -1068,7 +1068,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apppreferencesCollectionSchema"
+                $ref: "#/components/schemas/apppreferencesResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -1089,14 +1089,21 @@ paths:
         - Settings
       summary: Get a specific apppreferences by ID
       description: Retrieve a single apppreferences resource by its ID
-      operationId: get_v3_apppreferences_apppreferences_id
+      operationId: get_v3_apppreferences_id
+      parameters:
+        - name: apppreferences_ID
+          in: path
+          schema:
+            type: string
+          description: Unique identifier for this preference.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/apppreferencesCollectionSchema"
+                $ref: "#/components/schemas/apppreferencesResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -1111,13 +1118,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: apppreferences_ID
-        in: path
-        schema:
-          type: string
-        description: Unique identifier for this preference.
-        required: true
   /v3/REST/axtesting:
     get:
       tags:
@@ -1149,7 +1149,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -1172,7 +1172,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/axtestingCollectionSchema"
+                $ref: "#/components/schemas/axtestingResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -1264,7 +1264,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/axtestingCollectionSchema"
+                $ref: "#/components/schemas/axtestingResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -1310,7 +1310,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/axtestingCollectionSchema"
+                $ref: "#/components/schemas/axtestingResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -1331,14 +1331,21 @@ paths:
         - Campaigns
       summary: Get a specific axtesting by ID
       description: Retrieve a single axtesting resource by its ID
-      operationId: get_v3_axtesting_axtesting_id
+      operationId: get_v3_axtesting_id
+      parameters:
+        - name: axtesting_ID
+          in: path
+          schema:
+            type: string
+          description: Unique identifier for this A/B test.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/axtestingCollectionSchema"
+                $ref: "#/components/schemas/axtestingResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -1353,13 +1360,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: axtesting_ID
-        in: path
-        schema:
-          type: string
-        description: Unique identifier for this A/B test.
-        required: true
   /v3/REST/batchjob:
     get:
       tags:
@@ -1432,7 +1432,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -1455,7 +1455,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/batchjobCollectionSchema"
+                $ref: "#/components/schemas/batchjobResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -1544,7 +1544,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/batchjobCollectionSchema"
+                $ref: "#/components/schemas/batchjobResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -1631,7 +1631,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/batchjobCollectionSchema"
+                $ref: "#/components/schemas/batchjobResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -1653,14 +1653,21 @@ paths:
         - Messages
       summary: Get a specific batchjob by ID
       description: Retrieve a single batchjob resource by its ID
-      operationId: get_v3_batchjob_batchjob_id
+      operationId: get_v3_batchjob_id
+      parameters:
+        - name: batchjob_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/batchjobCollectionSchema"
+                $ref: "#/components/schemas/batchjobResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -1675,13 +1682,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: batchjob_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/bouncestatistics:
     get:
       tags:
@@ -1784,7 +1784,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -1807,7 +1807,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/bouncestatisticsCollectionSchema"
+                $ref: "#/components/schemas/bouncestatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -1829,14 +1829,21 @@ paths:
         - Statistics
       summary: Get a specific bouncestatistics by ID
       description: Retrieve a single bouncestatistics resource by its ID
-      operationId: get_v3_bouncestatistics_bouncestatistics_id
+      operationId: get_v3_bouncestatistics_id
+      parameters:
+        - name: bouncestatistics_ID
+          in: path
+          schema:
+            type: string
+          description: ID of the Message that led to this bounce.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/bouncestatisticsCollectionSchema"
+                $ref: "#/components/schemas/bouncestatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -1851,13 +1858,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: bouncestatistics_ID
-        in: path
-        schema:
-          type: string
-        description: ID of the Message that led to this bounce.
-        required: true
   /v3/REST/campaign:
     get:
       tags:
@@ -1949,7 +1949,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -1972,7 +1972,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaignCollectionSchema"
+                $ref: "#/components/schemas/campaignResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2080,7 +2080,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaignCollectionSchema"
+                $ref: "#/components/schemas/campaignResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2101,14 +2101,21 @@ paths:
         - Campaigns
       summary: Get a specific campaign by ID
       description: Retrieve a single campaign resource by its ID
-      operationId: get_v3_campaign_campaign_id
+      operationId: get_v3_campaign_id
+      parameters:
+        - name: campaign_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaignCollectionSchema"
+                $ref: "#/components/schemas/campaignResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2123,13 +2130,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: campaign_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/campaignaggregate:
     get:
       tags:
@@ -2156,7 +2156,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -2179,7 +2179,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaignaggregateCollectionSchema"
+                $ref: "#/components/schemas/campaignaggregateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2261,7 +2261,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaignaggregateCollectionSchema"
+                $ref: "#/components/schemas/campaignaggregateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2302,7 +2302,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaignaggregateCollectionSchema"
+                $ref: "#/components/schemas/campaignaggregateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2323,14 +2323,21 @@ paths:
         - Campaigns
       summary: Get a specific campaignaggregate by ID
       description: Retrieve a single campaignaggregate resource by its ID
-      operationId: get_v3_campaignaggregate_campaignaggregate_id
+      operationId: get_v3_campaignaggregate_id
+      parameters:
+        - name: campaignaggregate_ID
+          in: path
+          schema:
+            type: string
+          description: Unique ID of the object
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaignaggregateCollectionSchema"
+                $ref: "#/components/schemas/campaignaggregateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2345,13 +2352,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: campaignaggregate_ID
-        in: path
-        schema:
-          type: string
-        description: Unique ID of the object
-        required: true
   /v3/REST/campaigndraft:
     get:
       tags:
@@ -2448,7 +2448,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -2471,7 +2471,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaigndraftCollectionSchema"
+                $ref: "#/components/schemas/campaigndraftResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2584,7 +2584,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaigndraftCollectionSchema"
+                $ref: "#/components/schemas/campaigndraftResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2695,7 +2695,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaigndraftCollectionSchema"
+                $ref: "#/components/schemas/campaigndraftResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2716,14 +2716,21 @@ paths:
         - Campaigns
       summary: Get a specific campaigndraft by ID
       description: Retrieve a single campaigndraft resource by its ID
-      operationId: get_v3_campaigndraft_campaigndraft_id
+      operationId: get_v3_campaigndraft_id
+      parameters:
+        - name: campaigndraft_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaigndraftCollectionSchema"
+                $ref: "#/components/schemas/campaigndraftResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2738,13 +2745,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: campaigndraft_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object
-        required: true
   /v3/REST/campaigngraphstatistics:
     get:
       tags:
@@ -2788,7 +2788,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -2811,7 +2811,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaigngraphstatisticsCollectionSchema"
+                $ref: "#/components/schemas/campaigngraphstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2834,14 +2834,21 @@ paths:
         - Statistics
       summary: Get a specific campaigngraphstatistics by ID
       description: Retrieve a single campaigngraphstatistics resource by its ID
-      operationId: get_v3_campaigngraphstatistics_campaigngraphstatistics_id
+      operationId: get_v3_campaigngraphstatistics_id
+      parameters:
+        - name: campaigngraphstatistics_ID
+          in: path
+          schema:
+            type: string
+          description: Unique ID of the object
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaigngraphstatisticsCollectionSchema"
+                $ref: "#/components/schemas/campaigngraphstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2856,13 +2863,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: campaigngraphstatistics_ID
-        in: path
-        schema:
-          type: string
-        description: Unique ID of the object
-        required: true
   /v3/REST/campaignoverview:
     get:
       tags:
@@ -2919,7 +2919,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -2942,7 +2942,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaignoverviewCollectionSchema"
+                $ref: "#/components/schemas/campaignoverviewResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2963,14 +2963,21 @@ paths:
         - Campaigns
       summary: Get a specific campaignoverview by ID
       description: Retrieve a single campaignoverview resource by its ID
-      operationId: get_v3_campaignoverview_campaignoverview_id
+      operationId: get_v3_campaignoverview_id
+      parameters:
+        - name: campaignoverview_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaignoverviewCollectionSchema"
+                $ref: "#/components/schemas/campaignoverviewResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -2985,13 +2992,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: campaignoverview_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/campaignstatistics:
     get:
       tags:
@@ -3145,7 +3145,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -3168,7 +3168,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/campaignstatisticsCollectionSchema"
+                $ref: "#/components/schemas/campaignstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -3290,7 +3290,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -3313,7 +3313,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/clickstatisticsCollectionSchema"
+                $ref: "#/components/schemas/clickstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -3335,14 +3335,21 @@ paths:
         - Statistics
       summary: Get a specific clickstatistics by ID
       description: Retrieve a single clickstatistics resource by its ID
-      operationId: get_v3_clickstatistics_clickstatistics_id
+      operationId: get_v3_clickstatistics_id
+      parameters:
+        - name: clickstatistics_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for the click event.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/clickstatisticsCollectionSchema"
+                $ref: "#/components/schemas/clickstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -3357,13 +3364,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: clickstatistics_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for the click event.
-        required: true
   /v3/REST/contact:
     get:
       tags:
@@ -3450,7 +3450,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -3473,7 +3473,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactCollectionSchema"
+                $ref: "#/components/schemas/contactResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -3576,7 +3576,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactCollectionSchema"
+                $ref: "#/components/schemas/contactResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -3677,7 +3677,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactCollectionSchema"
+                $ref: "#/components/schemas/contactResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -3698,14 +3698,21 @@ paths:
         - Contacts
       summary: Get a specific contact by ID
       description: Retrieve a single contact resource by its ID
-      operationId: get_v3_contact_contact_id
+      operationId: get_v3_contact_id
+      parameters:
+        - name: contact_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactCollectionSchema"
+                $ref: "#/components/schemas/contactResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -3720,13 +3727,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: contact_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/contactactivity:
     get:
       tags:
@@ -3743,7 +3743,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -3766,7 +3766,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactactivityCollectionSchema"
+                $ref: "#/components/schemas/contactactivityResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -3787,14 +3787,21 @@ paths:
         - Contacts
       summary: Get a specific contactactivity by ID
       description: Retrieve a single contactactivity resource by its ID
-      operationId: get_v3_contactactivity_contactactivity_id
+      operationId: get_v3_contactactivity_id
+      parameters:
+        - name: contactactivity_ID
+          in: path
+          schema:
+            type: string
+          description: Unique identifier for this activity record.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactactivityCollectionSchema"
+                $ref: "#/components/schemas/contactactivityResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -3809,13 +3816,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: contactactivity_ID
-        in: path
-        schema:
-          type: string
-        description: Unique identifier for this activity record.
-        required: true
   /v3/REST/contactdata:
     get:
       tags:
@@ -3922,7 +3922,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -3945,7 +3945,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactdataCollectionSchema"
+                $ref: "#/components/schemas/contactdataResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -4187,7 +4187,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactdataCollectionSchema"
+                $ref: "#/components/schemas/contactdataResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -4308,7 +4308,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactdataCollectionSchema"
+                $ref: "#/components/schemas/contactdataResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -4329,14 +4329,21 @@ paths:
         - Contacts
       summary: Get a specific contactdata by ID
       description: Retrieve a single contactdata resource by its ID
-      operationId: get_v3_contactdata_contactdata_id
+      operationId: get_v3_contactdata_id
+      parameters:
+        - name: contactdata_ID
+          in: path
+          schema:
+            type: string
+          description: ID of this resource. It equals the Contact ID.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactdataCollectionSchema"
+                $ref: "#/components/schemas/contactdataResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -4351,13 +4358,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: contactdata_ID
-        in: path
-        schema:
-          type: string
-        description: ID of this resource. It equals the Contact ID.
-        required: true
   /v3/REST/contactfilter:
     get:
       tags:
@@ -4420,7 +4420,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -4443,7 +4443,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactfilterCollectionSchema"
+                $ref: "#/components/schemas/contactfilterResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -4597,7 +4597,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactfilterCollectionSchema"
+                $ref: "#/components/schemas/contactfilterResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -4674,7 +4674,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactfilterCollectionSchema"
+                $ref: "#/components/schemas/contactfilterResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -4696,14 +4696,21 @@ paths:
         - Segmentation
       summary: Get a specific contactfilter by ID
       description: Retrieve a single contactfilter resource by its ID
-      operationId: get_v3_contactfilter_contactfilter_id
+      operationId: get_v3_contactfilter_id
+      parameters:
+        - name: contactfilter_ID
+          in: path
+          schema:
+            type: string
+          description: ID of the filter
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactfilterCollectionSchema"
+                $ref: "#/components/schemas/contactfilterResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -4718,13 +4725,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: contactfilter_ID
-        in: path
-        schema:
-          type: string
-        description: ID of the filter
-        required: true
   /v3/REST/contacthistorydata:
     get:
       tags:
@@ -4761,7 +4761,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -4784,7 +4784,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contacthistorydataCollectionSchema"
+                $ref: "#/components/schemas/contacthistorydataResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -4886,7 +4886,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contacthistorydataCollectionSchema"
+                $ref: "#/components/schemas/contacthistorydataResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -4905,14 +4905,21 @@ paths:
         - Contacts
       summary: Get a specific contacthistorydata by ID
       description: Retrieve a single contacthistorydata resource by its ID
-      operationId: get_v3_contacthistorydata_contacthistorydata_id
+      operationId: get_v3_contacthistorydata_id
+      parameters:
+        - name: contacthistorydata_ID
+          in: path
+          schema:
+            type: string
+          description: ID of the data item.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contacthistorydataCollectionSchema"
+                $ref: "#/components/schemas/contacthistorydataResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -4927,13 +4934,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: contacthistorydata_ID
-        in: path
-        schema:
-          type: string
-        description: ID of the data item.
-        required: true
   /v3/REST/contactmetadata:
     get:
       tags:
@@ -4955,7 +4955,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -4978,7 +4978,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactmetadataCollectionSchema"
+                $ref: "#/components/schemas/contactmetadataResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5050,7 +5050,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactmetadataCollectionSchema"
+                $ref: "#/components/schemas/contactmetadataResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5086,7 +5086,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactmetadataCollectionSchema"
+                $ref: "#/components/schemas/contactmetadataResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5107,14 +5107,21 @@ paths:
         - Contacts
       summary: Get a specific contactmetadata by ID
       description: Retrieve a single contactmetadata resource by its ID
-      operationId: get_v3_contactmetadata_contactmetadata_id
+      operationId: get_v3_contactmetadata_id
+      parameters:
+        - name: contactmetadata_ID
+          in: path
+          schema:
+            type: string
+          description: ID of this definition.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactmetadataCollectionSchema"
+                $ref: "#/components/schemas/contactmetadataResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5129,13 +5136,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: contactmetadata_ID
-        in: path
-        schema:
-          type: string
-        description: ID of this definition.
-        required: true
   /v3/REST/contactslist:
     get:
       tags:
@@ -5167,7 +5167,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -5190,7 +5190,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactslistCollectionSchema"
+                $ref: "#/components/schemas/contactslistResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5282,7 +5282,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactslistCollectionSchema"
+                $ref: "#/components/schemas/contactslistResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5328,7 +5328,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactslistCollectionSchema"
+                $ref: "#/components/schemas/contactslistResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5349,14 +5349,21 @@ paths:
         - Contacts
       summary: Get a specific contactslist by ID
       description: Retrieve a single contactslist resource by its ID
-      operationId: get_v3_contactslist_contactslist_id
+      operationId: get_v3_contactslist_id
+      parameters:
+        - name: contactslist_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactslistCollectionSchema"
+                $ref: "#/components/schemas/contactslistResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5371,13 +5378,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: contactslist_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/contactslistsignup:
     get:
       tags:
@@ -5464,7 +5464,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -5487,7 +5487,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactslistsignupCollectionSchema"
+                $ref: "#/components/schemas/contactslistsignupResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5508,14 +5508,21 @@ paths:
         - Contacts
       summary: Get a specific contactslistsignup by ID
       description: Retrieve a single contactslistsignup resource by its ID
-      operationId: get_v3_contactslistsignup_contactslistsignup_id
+      operationId: get_v3_contactslistsignup_id
+      parameters:
+        - name: contactslistsignup_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactslistsignupCollectionSchema"
+                $ref: "#/components/schemas/contactslistsignupResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5530,13 +5537,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: contactslistsignup_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/contactstatistics:
     get:
       tags:
@@ -5619,7 +5619,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -5642,7 +5642,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/contactstatisticsCollectionSchema"
+                $ref: "#/components/schemas/contactstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5668,7 +5668,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -5691,7 +5691,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/csvimportCollectionSchema"
+                $ref: "#/components/schemas/csvimportResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5718,7 +5718,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/csvimportCollectionSchema"
+                $ref: "#/components/schemas/csvimportResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5743,7 +5743,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/csvimportCollectionSchema"
+                $ref: "#/components/schemas/csvimportResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5764,14 +5764,21 @@ paths:
         - Contacts
       summary: Get a specific csvimport by ID
       description: Retrieve a single csvimport resource by its ID
-      operationId: get_v3_csvimport_csvimport_id
+      operationId: get_v3_csvimport_id
+      parameters:
+        - name: csvimport_ID
+          in: path
+          schema:
+            type: string
+          description: Unique ID of this CSV import file.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/csvimportCollectionSchema"
+                $ref: "#/components/schemas/csvimportResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5786,13 +5793,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: csvimport_ID
-        in: path
-        schema:
-          type: string
-        description: Unique ID of this CSV import file.
-        required: true
   /v3/REST/dns:
     get:
       tags:
@@ -5834,7 +5834,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -5857,7 +5857,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/dnsCollectionSchema"
+                $ref: "#/components/schemas/dnsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5878,14 +5878,21 @@ paths:
         - Domains
       summary: Get a specific dns by ID
       description: Retrieve a single dns resource by its ID
-      operationId: get_v3_dns_dns_id
+      operationId: get_v3_dns_id
+      parameters:
+        - name: dns_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/dnsCollectionSchema"
+                $ref: "#/components/schemas/dnsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -5900,13 +5907,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: dns_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/domainstatistics:
     get:
       tags:
@@ -5999,7 +5999,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -6022,7 +6022,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/domainstatisticsCollectionSchema"
+                $ref: "#/components/schemas/domainstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -6044,14 +6044,21 @@ paths:
         - Statistics
       summary: Get a specific domainstatistics by ID
       description: Retrieve a single domainstatistics resource by its ID
-      operationId: get_v3_domainstatistics_domainstatistics_id
+      operationId: get_v3_domainstatistics_id
+      parameters:
+        - name: domainstatistics_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/domainstatisticsCollectionSchema"
+                $ref: "#/components/schemas/domainstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -6066,13 +6073,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: domainstatistics_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/eventcallbackurl:
     get:
       tags:
@@ -6109,7 +6109,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -6132,7 +6132,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/eventcallbackurlCollectionSchema"
+                $ref: "#/components/schemas/eventcallbackurlResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -6234,7 +6234,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/eventcallbackurlCollectionSchema"
+                $ref: "#/components/schemas/eventcallbackurlResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -6285,7 +6285,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/eventcallbackurlCollectionSchema"
+                $ref: "#/components/schemas/eventcallbackurlResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -6306,14 +6306,21 @@ paths:
         - Webhooks
       summary: Get a specific eventcallbackurl by ID
       description: Retrieve a single eventcallbackurl resource by its ID
-      operationId: get_v3_eventcallbackurl_eventcallbackurl_id
+      operationId: get_v3_eventcallbackurl_id
+      parameters:
+        - name: eventcallbackurl_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/eventcallbackurlCollectionSchema"
+                $ref: "#/components/schemas/eventcallbackurlResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -6328,13 +6335,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: eventcallbackurl_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/geostatistics:
     get:
       tags:
@@ -6426,7 +6426,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -6449,7 +6449,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/geostatisticsCollectionSchema"
+                $ref: "#/components/schemas/geostatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -6581,7 +6581,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -6604,7 +6604,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/graphstatisticsCollectionSchema"
+                $ref: "#/components/schemas/graphstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -6690,7 +6690,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -6713,7 +6713,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listrecipientCollectionSchema"
+                $ref: "#/components/schemas/listrecipientResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -6885,7 +6885,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listrecipientCollectionSchema"
+                $ref: "#/components/schemas/listrecipientResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -6971,7 +6971,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listrecipientCollectionSchema"
+                $ref: "#/components/schemas/listrecipientResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -6992,14 +6992,21 @@ paths:
         - Contacts
       summary: Get a specific listrecipient by ID
       description: Retrieve a single listrecipient resource by its ID
-      operationId: get_v3_listrecipient_listrecipient_id
+      operationId: get_v3_listrecipient_id
+      parameters:
+        - name: listrecipient_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listrecipientCollectionSchema"
+                $ref: "#/components/schemas/listrecipientResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -7014,13 +7021,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: listrecipient_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/listrecipientstatistics:
     get:
       tags:
@@ -7147,7 +7147,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -7170,7 +7170,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/listrecipientstatisticsCollectionSchema"
+                $ref: "#/components/schemas/listrecipientstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -7317,7 +7317,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -7340,7 +7340,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/liststatisticsCollectionSchema"
+                $ref: "#/components/schemas/liststatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -7362,14 +7362,21 @@ paths:
         - Statistics
       summary: Get a specific liststatistics by ID
       description: Retrieve a single liststatistics resource by its ID
-      operationId: get_v3_liststatistics_liststatistics_id
+      operationId: get_v3_liststatistics_id
+      parameters:
+        - name: liststatistics_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/liststatisticsCollectionSchema"
+                $ref: "#/components/schemas/liststatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -7384,13 +7391,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: liststatistics_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/message:
     get:
       tags:
@@ -7512,7 +7512,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -7535,7 +7535,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/messageCollectionSchema"
+                $ref: "#/components/schemas/messageResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -7556,14 +7556,21 @@ paths:
         - Messages
       summary: Get a specific message by ID
       description: Retrieve a single message resource by its ID
-      operationId: get_v3_message_message_id
+      operationId: get_v3_message_id
+      parameters:
+        - name: message_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/messageCollectionSchema"
+                $ref: "#/components/schemas/messageResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -7578,13 +7585,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: message_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/messagehistory:
     get:
       tags:
@@ -7601,7 +7601,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -7624,7 +7624,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/messagehistoryCollectionSchema"
+                $ref: "#/components/schemas/messagehistoryResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -7730,7 +7730,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -7753,7 +7753,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/messageinformationCollectionSchema"
+                $ref: "#/components/schemas/messageinformationResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -7774,14 +7774,21 @@ paths:
         - Messages
       summary: Get a specific messageinformation by ID
       description: Retrieve a single messageinformation resource by its ID
-      operationId: get_v3_messageinformation_messageinformation_id
+      operationId: get_v3_messageinformation_id
+      parameters:
+        - name: messageinformation_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/messageinformationCollectionSchema"
+                $ref: "#/components/schemas/messageinformationResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -7796,13 +7803,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: messageinformation_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/messagesentstatistics:
     get:
       tags:
@@ -7951,7 +7951,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -7974,7 +7974,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/messagesentstatisticsCollectionSchema"
+                $ref: "#/components/schemas/messagesentstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -7997,14 +7997,21 @@ paths:
         - Statistics
       summary: Get a specific messagesentstatistics by ID
       description: Retrieve a single messagesentstatistics resource by its ID
-      operationId: get_v3_messagesentstatistics_messagesentstatistics_id
+      operationId: get_v3_messagesentstatistics_id
+      parameters:
+        - name: messagesentstatistics_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/messagesentstatisticsCollectionSchema"
+                $ref: "#/components/schemas/messagesentstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8019,13 +8026,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: messagesentstatistics_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/messagestate:
     get:
       tags:
@@ -8037,7 +8037,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -8060,7 +8060,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/messagestateCollectionSchema"
+                $ref: "#/components/schemas/messagestateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8081,14 +8081,21 @@ paths:
         - Messages
       summary: Get a specific messagestate by ID
       description: Retrieve a single messagestate resource by its ID
-      operationId: get_v3_messagestate_messagestate_id
+      operationId: get_v3_messagestate_id
+      parameters:
+        - name: messagestate_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/messagestateCollectionSchema"
+                $ref: "#/components/schemas/messagestateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8103,13 +8110,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: messagestate_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/messagestatistics:
     get:
       tags:
@@ -8228,7 +8228,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -8251,7 +8251,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/messagestatisticsCollectionSchema"
+                $ref: "#/components/schemas/messagestatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8287,7 +8287,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -8310,7 +8310,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/metasenderCollectionSchema"
+                $ref: "#/components/schemas/metasenderResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8348,7 +8348,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/metasenderCollectionSchema"
+                $ref: "#/components/schemas/metasenderResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8384,7 +8384,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/metasenderCollectionSchema"
+                $ref: "#/components/schemas/metasenderResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8405,14 +8405,21 @@ paths:
         - Senders
       summary: Get a specific metasender by ID
       description: Retrieve a single metasender resource by its ID
-      operationId: get_v3_metasender_metasender_id
+      operationId: get_v3_metasender_id
+      parameters:
+        - name: metasender_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/metasenderCollectionSchema"
+                $ref: "#/components/schemas/metasenderResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8427,13 +8434,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: metasender_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/myprofile:
     get:
       tags:
@@ -8450,7 +8450,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -8473,7 +8473,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/myprofileCollectionSchema"
+                $ref: "#/components/schemas/myprofileResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8506,7 +8506,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/myprofileCollectionSchema"
+                $ref: "#/components/schemas/myprofileResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8527,14 +8527,21 @@ paths:
         - Settings
       summary: Get a specific myprofile by ID
       description: Retrieve a single myprofile resource by its ID
-      operationId: get_v3_myprofile_myprofile_id
+      operationId: get_v3_myprofile_id
+      parameters:
+        - name: myprofile_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/myprofileCollectionSchema"
+                $ref: "#/components/schemas/myprofileResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8549,13 +8556,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: myprofile_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/newsletter:
     get:
       tags:
@@ -8642,7 +8642,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -8665,7 +8665,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/newsletterCollectionSchema"
+                $ref: "#/components/schemas/newsletterResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8768,7 +8768,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/newsletterCollectionSchema"
+                $ref: "#/components/schemas/newsletterResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8869,7 +8869,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/newsletterCollectionSchema"
+                $ref: "#/components/schemas/newsletterResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8890,14 +8890,21 @@ paths:
         - Legacy
       summary: Get a specific newsletter by ID
       description: Retrieve a single newsletter resource by its ID
-      operationId: get_v3_newsletter_newsletter_id
+      operationId: get_v3_newsletter_id
+      parameters:
+        - name: newsletter_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/newsletterCollectionSchema"
+                $ref: "#/components/schemas/newsletterResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -8912,13 +8919,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: newsletter_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/newslettertemplate:
     get:
       tags:
@@ -8940,7 +8940,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -8963,7 +8963,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/newslettertemplateCollectionSchema"
+                $ref: "#/components/schemas/newslettertemplateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9001,7 +9001,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/newslettertemplateCollectionSchema"
+                $ref: "#/components/schemas/newslettertemplateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9037,7 +9037,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/newslettertemplateCollectionSchema"
+                $ref: "#/components/schemas/newslettertemplateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9058,14 +9058,21 @@ paths:
         - Legacy
       summary: Get a specific newslettertemplate by ID
       description: Retrieve a single newslettertemplate resource by its ID
-      operationId: get_v3_newslettertemplate_newslettertemplate_id
+      operationId: get_v3_newslettertemplate_id
+      parameters:
+        - name: newslettertemplate_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/newslettertemplateCollectionSchema"
+                $ref: "#/components/schemas/newslettertemplateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9080,13 +9087,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: newslettertemplate_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/newslettertemplatecategory:
     get:
       tags:
@@ -9103,7 +9103,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -9126,7 +9126,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/newslettertemplatecategoryCollectionSchema"
+                $ref: "#/components/schemas/newslettertemplatecategoryResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9147,14 +9147,21 @@ paths:
         - Legacy
       summary: Get a specific newslettertemplatecategory by ID
       description: Retrieve a single newslettertemplatecategory resource by its ID
-      operationId: get_v3_newslettertemplatecategory_newslettertemplatecategory_id
+      operationId: get_v3_newslettertemplatecategory_id
+      parameters:
+        - name: newslettertemplatecategory_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/newslettertemplatecategoryCollectionSchema"
+                $ref: "#/components/schemas/newslettertemplatecategoryResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9169,13 +9176,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: newslettertemplatecategory_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/openinformation:
     get:
       tags:
@@ -9282,7 +9282,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -9305,7 +9305,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/openinformationCollectionSchema"
+                $ref: "#/components/schemas/openinformationResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9326,14 +9326,21 @@ paths:
         - Message Events
       summary: Get a specific openinformation by ID
       description: Retrieve a single openinformation resource by its ID
-      operationId: get_v3_openinformation_openinformation_id
+      operationId: get_v3_openinformation_id
+      parameters:
+        - name: openinformation_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/openinformationCollectionSchema"
+                $ref: "#/components/schemas/openinformationResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9348,13 +9355,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: openinformation_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/openstatistics:
     get:
       tags:
@@ -9447,7 +9447,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -9470,7 +9470,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/openstatisticsCollectionSchema"
+                $ref: "#/components/schemas/openstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9501,7 +9501,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -9524,7 +9524,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/parserouteCollectionSchema"
+                $ref: "#/components/schemas/parserouteResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9586,7 +9586,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/parserouteCollectionSchema"
+                $ref: "#/components/schemas/parserouteResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9617,7 +9617,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/parserouteCollectionSchema"
+                $ref: "#/components/schemas/parserouteResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9638,14 +9638,21 @@ paths:
         - Parse API
       summary: Get a specific parseroute by ID
       description: Retrieve a single parseroute resource by its ID
-      operationId: get_v3_parseroute_parseroute_id
+      operationId: get_v3_parseroute_id
+      parameters:
+        - name: parseroute_ID
+          in: path
+          schema:
+            type: string
+          description: Unique ID of the object
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/parserouteCollectionSchema"
+                $ref: "#/components/schemas/parserouteResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9660,13 +9667,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: parseroute_ID
-        in: path
-        schema:
-          type: string
-        description: Unique ID of the object
-        required: true
   /v3/REST/preferences:
     get:
       tags:
@@ -9733,7 +9733,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -9756,7 +9756,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/preferencesCollectionSchema"
+                $ref: "#/components/schemas/preferencesResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9777,14 +9777,21 @@ paths:
         - Settings
       summary: Get a specific preferences by ID
       description: Retrieve a single preferences resource by its ID
-      operationId: get_v3_preferences_preferences_id
+      operationId: get_v3_preferences_id
+      parameters:
+        - name: preferences_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/preferencesCollectionSchema"
+                $ref: "#/components/schemas/preferencesResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9799,13 +9806,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: preferences_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/preset:
     get:
       tags:
@@ -9837,7 +9837,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -9860,7 +9860,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/presetCollectionSchema"
+                $ref: "#/components/schemas/presetResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9952,7 +9952,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/presetCollectionSchema"
+                $ref: "#/components/schemas/presetResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -9998,7 +9998,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/presetCollectionSchema"
+                $ref: "#/components/schemas/presetResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10019,14 +10019,21 @@ paths:
         - Templates
       summary: Get a specific preset by ID
       description: Retrieve a single preset resource by its ID
-      operationId: get_v3_preset_preset_id
+      operationId: get_v3_preset_id
+      parameters:
+        - name: preset_ID
+          in: path
+          schema:
+            type: string
+          description: The ID of preset
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/presetCollectionSchema"
+                $ref: "#/components/schemas/presetResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10041,13 +10048,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: preset_ID
-        in: path
-        schema:
-          type: string
-        description: The ID of preset
-        required: true
   /v3/REST/returnpath:
     get:
       tags:
@@ -10059,7 +10059,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -10082,7 +10082,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/returnpathCollectionSchema"
+                $ref: "#/components/schemas/returnpathResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10103,14 +10103,21 @@ paths:
         - Messages
       summary: Get a specific returnpath by ID
       description: Retrieve a single returnpath resource by its ID
-      operationId: get_v3_returnpath_returnpath_id
+      operationId: get_v3_returnpath_id
+      parameters:
+        - name: returnpath_ID
+          in: path
+          schema:
+            type: string
+          description: Unique identifier for this return path configuration.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/returnpathCollectionSchema"
+                $ref: "#/components/schemas/returnpathResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10125,13 +10132,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: returnpath_ID
-        in: path
-        schema:
-          type: string
-        description: Unique identifier for this return path configuration.
-        required: true
   /v3/REST/sender:
     get:
       tags:
@@ -10178,7 +10178,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -10201,7 +10201,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/senderCollectionSchema"
+                $ref: "#/components/schemas/senderResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10323,7 +10323,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/senderCollectionSchema"
+                $ref: "#/components/schemas/senderResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10384,7 +10384,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/senderCollectionSchema"
+                $ref: "#/components/schemas/senderResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10405,14 +10405,21 @@ paths:
         - Senders
       summary: Get a specific sender by ID
       description: Retrieve a single sender resource by its ID
-      operationId: get_v3_sender_sender_id
+      operationId: get_v3_sender_id
+      parameters:
+        - name: sender_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/senderCollectionSchema"
+                $ref: "#/components/schemas/senderResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10427,13 +10434,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: sender_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/senderstatistics:
     get:
       tags:
@@ -10526,7 +10526,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -10549,7 +10549,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/senderstatisticsCollectionSchema"
+                $ref: "#/components/schemas/senderstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10627,7 +10627,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -10650,7 +10650,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/statcountersCollectionSchema"
+                $ref: "#/components/schemas/statcountersResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10721,7 +10721,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -10744,7 +10744,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/templateCollectionSchema"
+                $ref: "#/components/schemas/templateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10886,7 +10886,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/templateCollectionSchema"
+                $ref: "#/components/schemas/templateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10957,7 +10957,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/templateCollectionSchema"
+                $ref: "#/components/schemas/templateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -10978,14 +10978,21 @@ paths:
         - Templates
       summary: Get a specific template by ID
       description: Retrieve a single template resource by its ID
-      operationId: get_v3_template_template_id
+      operationId: get_v3_template_id
+      parameters:
+        - name: template_ID
+          in: path
+          schema:
+            type: string
+          description: The ID of template
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/templateCollectionSchema"
+                $ref: "#/components/schemas/templateResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -11000,13 +11007,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: template_ID
-        in: path
-        schema:
-          type: string
-        description: The ID of template
-        required: true
   /v3/REST/toplinkclicked:
     get:
       tags:
@@ -11108,7 +11108,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -11131,7 +11131,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/toplinkclickedCollectionSchema"
+                $ref: "#/components/schemas/toplinkclickedResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -11152,14 +11152,21 @@ paths:
         - Statistics
       summary: Get a specific toplinkclicked by ID
       description: Retrieve a single toplinkclicked resource by its ID
-      operationId: get_v3_toplinkclicked_toplinkclicked_id
+      operationId: get_v3_toplinkclicked_id
+      parameters:
+        - name: toplinkclicked_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/toplinkclickedCollectionSchema"
+                $ref: "#/components/schemas/toplinkclickedResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -11174,13 +11181,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: toplinkclicked_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/user:
     get:
       tags:
@@ -11207,7 +11207,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -11230,7 +11230,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/userCollectionSchema"
+                $ref: "#/components/schemas/userResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -11273,7 +11273,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/userCollectionSchema"
+                $ref: "#/components/schemas/userResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -11294,14 +11294,21 @@ paths:
         - Settings
       summary: Get a specific user by ID
       description: Retrieve a single user resource by its ID
-      operationId: get_v3_user_user_id
+      operationId: get_v3_user_id
+      parameters:
+        - name: user_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/userCollectionSchema"
+                $ref: "#/components/schemas/userResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -11316,13 +11323,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: user_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/useractivity:
     get:
       tags:
@@ -11344,7 +11344,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -11367,7 +11367,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/useractivityCollectionSchema"
+                $ref: "#/components/schemas/useractivityResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -11393,7 +11393,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -11416,7 +11416,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/useragentCollectionSchema"
+                $ref: "#/components/schemas/useragentResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -11437,14 +11437,21 @@ paths:
         - Statistics
       summary: Get a specific useragent by ID
       description: Retrieve a single useragent resource by its ID
-      operationId: get_v3_useragent_useragent_id
+      operationId: get_v3_useragent_id
+      parameters:
+        - name: useragent_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/useragentCollectionSchema"
+                $ref: "#/components/schemas/useragentResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -11459,13 +11466,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: useragent_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/useragentstatistics:
     get:
       tags:
@@ -11567,7 +11567,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -11590,7 +11590,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/useragentstatisticsCollectionSchema"
+                $ref: "#/components/schemas/useragentstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -11691,7 +11691,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -11714,7 +11714,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/widgetCollectionSchema"
+                $ref: "#/components/schemas/widgetResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -11916,7 +11916,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/widgetCollectionSchema"
+                $ref: "#/components/schemas/widgetResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -12017,7 +12017,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/widgetCollectionSchema"
+                $ref: "#/components/schemas/widgetResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -12038,14 +12038,21 @@ paths:
         - Contacts
       summary: Get a specific widget by ID
       description: Retrieve a single widget resource by its ID
-      operationId: get_v3_widget_widget_id
+      operationId: get_v3_widget_id
+      parameters:
+        - name: widget_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/widgetCollectionSchema"
+                $ref: "#/components/schemas/widgetResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -12060,13 +12067,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: widget_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/widgetcustomvalue:
     get:
       tags:
@@ -12088,7 +12088,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -12111,7 +12111,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/widgetcustomvalueCollectionSchema"
+                $ref: "#/components/schemas/widgetcustomvalueResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -12183,7 +12183,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/widgetcustomvalueCollectionSchema"
+                $ref: "#/components/schemas/widgetcustomvalueResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -12219,7 +12219,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/widgetcustomvalueCollectionSchema"
+                $ref: "#/components/schemas/widgetcustomvalueResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -12240,14 +12240,21 @@ paths:
         - Contacts
       summary: Get a specific widgetcustomvalue by ID
       description: Retrieve a single widgetcustomvalue resource by its ID
-      operationId: get_v3_widgetcustomvalue_widgetcustomvalue_id
+      operationId: get_v3_widgetcustomvalue_id
+      parameters:
+        - name: widgetcustomvalue_ID
+          in: path
+          schema:
+            type: string
+          description: Unique numerical ID for this object.
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/widgetcustomvalueCollectionSchema"
+                $ref: "#/components/schemas/widgetcustomvalueResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -12262,13 +12269,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: widgetcustomvalue_ID
-        in: path
-        schema:
-          type: string
-        description: Unique numerical ID for this object.
-        required: true
   /v3/REST/workflow:
     get:
       tags:
@@ -12320,7 +12320,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -12343,7 +12343,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/workflowCollectionSchema"
+                $ref: "#/components/schemas/workflowResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -12475,7 +12475,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/workflowCollectionSchema"
+                $ref: "#/components/schemas/workflowResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -12541,7 +12541,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/workflowCollectionSchema"
+                $ref: "#/components/schemas/workflowResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -12562,14 +12562,21 @@ paths:
         - Automation
       summary: Get a specific workflow by ID
       description: Retrieve a single workflow resource by its ID
-      operationId: get_v3_workflow_workflow_id
+      operationId: get_v3_workflow_id
+      parameters:
+        - name: workflow_ID
+          in: path
+          schema:
+            type: string
+          description: Unique identifier of the workflow
+          required: true
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/workflowCollectionSchema"
+                $ref: "#/components/schemas/workflowResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -12584,13 +12591,6 @@ paths:
           $ref: "#/components/responses/500"
       security:
         - basicAuth: []
-    parameters:
-      - name: workflow_ID
-        in: path
-        schema:
-          type: string
-        description: Unique identifier of the workflow
-        required: true
   /v3/REST/workflowstatistics:
     get:
       tags:
@@ -12617,7 +12617,7 @@ paths:
         - name: countOnly
           in: query
           schema:
-            type: boolean
+            type: integer
           description: "Set the value of this query parameter to `1` to retrieve the overall number of objects returned by this request for your API Key. No list of results will be returned - the objects will simply be counted. Default value is `0`"
         - name: Limit
           in: query
@@ -12640,7 +12640,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/workflowstatisticsCollectionSchema"
+                $ref: "#/components/schemas/workflowstatisticsResponse"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -12657,7 +12657,7 @@ paths:
         - basicAuth: []
 components:
   schemas:
-    activitycountersCollectionSchema:
+    activitycountersResponse:
       type: object
       properties:
         Count:
@@ -12688,7 +12688,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    aggregategraphstatisticsCollectionSchema:
+    aggregategraphstatisticsResponse:
       type: object
       properties:
         Count:
@@ -12735,7 +12735,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    apikeyCollectionSchema:
+    apikeyResponse:
       type: object
       properties:
         Count:
@@ -12779,7 +12779,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    apikeyaccessCollectionSchema:
+    apikeyaccessResponse:
       type: object
       properties:
         Count:
@@ -12817,7 +12817,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    apikeyaccessgrantorCollectionSchema:
+    apikeyaccessgrantorResponse:
       type: object
       properties:
         Count:
@@ -12844,7 +12844,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    apikeytotalsCollectionSchema:
+    apikeytotalsResponse:
       type: object
       properties:
         Count:
@@ -12887,7 +12887,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    apitokenCollectionSchema:
+    apitokenResponse:
       type: object
       properties:
         Count:
@@ -12936,7 +12936,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    apppreferencesCollectionSchema:
+    apppreferencesResponse:
       type: object
       properties:
         Count:
@@ -12961,7 +12961,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    axtestingCollectionSchema:
+    axtestingResponse:
       type: object
       properties:
         Count:
@@ -13016,7 +13016,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    batchjobCollectionSchema:
+    batchjobResponse:
       type: object
       properties:
         Count:
@@ -13068,7 +13068,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    bouncestatisticsCollectionSchema:
+    bouncestatisticsResponse:
       type: object
       properties:
         Count:
@@ -13100,7 +13100,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    campaignCollectionSchema:
+    campaignResponse:
       type: object
       properties:
         Count:
@@ -13165,7 +13165,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    campaignaggregateCollectionSchema:
+    campaignaggregateResponse:
       type: object
       properties:
         Count:
@@ -13200,7 +13200,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    campaigndraftCollectionSchema:
+    campaigndraftResponse:
       type: object
       properties:
         Count:
@@ -13276,7 +13276,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    campaigngraphstatisticsCollectionSchema:
+    campaigngraphstatisticsResponse:
       type: object
       properties:
         Count:
@@ -13303,7 +13303,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    campaignoverviewCollectionSchema:
+    campaignoverviewResponse:
       type: object
       properties:
         Count:
@@ -13344,7 +13344,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    campaignstatisticsCollectionSchema:
+    campaignstatisticsResponse:
       type: object
       properties:
         Count:
@@ -13407,7 +13407,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    clickstatisticsCollectionSchema:
+    clickstatisticsResponse:
       type: object
       properties:
         Count:
@@ -13441,7 +13441,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    contactCollectionSchema:
+    contactResponse:
       type: object
       properties:
         Count:
@@ -13484,7 +13484,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    contactactivityCollectionSchema:
+    contactactivityResponse:
       type: object
       properties:
         Count:
@@ -13517,7 +13517,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    contactdataCollectionSchema:
+    contactdataResponse:
       type: object
       properties:
         Count:
@@ -13540,7 +13540,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    contactfilterCollectionSchema:
+    contactfilterResponse:
       type: object
       properties:
         Count:
@@ -13565,7 +13565,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    contacthistorydataCollectionSchema:
+    contacthistorydataResponse:
       type: object
       properties:
         Count:
@@ -13590,7 +13590,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    contactmetadataCollectionSchema:
+    contactmetadataResponse:
       type: object
       properties:
         Count:
@@ -13617,7 +13617,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    contactslistCollectionSchema:
+    contactslistResponse:
       type: object
       properties:
         Count:
@@ -13644,7 +13644,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    contactslistsignupCollectionSchema:
+    contactslistsignupResponse:
       type: object
       properties:
         Count:
@@ -13691,7 +13691,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    contactstatisticsCollectionSchema:
+    contactstatisticsResponse:
       type: object
       properties:
         Count:
@@ -13742,7 +13742,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    csvimportCollectionSchema:
+    csvimportResponse:
       type: object
       properties:
         Count:
@@ -13788,7 +13788,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    dnsCollectionSchema:
+    dnsResponse:
       type: object
       properties:
         Count:
@@ -13827,7 +13827,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    domainstatisticsCollectionSchema:
+    domainstatisticsResponse:
       type: object
       properties:
         Count:
@@ -13864,7 +13864,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    eventcallbackurlCollectionSchema:
+    eventcallbackurlResponse:
       type: object
       properties:
         Count:
@@ -13910,7 +13910,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    geostatisticsCollectionSchema:
+    geostatisticsResponse:
       type: object
       properties:
         Count:
@@ -13931,7 +13931,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    graphstatisticsCollectionSchema:
+    graphstatisticsResponse:
       type: object
       properties:
         Count:
@@ -13974,7 +13974,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    listrecipientCollectionSchema:
+    listrecipientResponse:
       type: object
       properties:
         Count:
@@ -14006,7 +14006,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    listrecipientstatisticsCollectionSchema:
+    listrecipientstatisticsResponse:
       type: object
       properties:
         Count:
@@ -14055,7 +14055,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    liststatisticsCollectionSchema:
+    liststatisticsResponse:
       type: object
       properties:
         Count:
@@ -14120,7 +14120,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    messageCollectionSchema:
+    messageResponse:
       type: object
       properties:
         Count:
@@ -14192,7 +14192,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    messagehistoryCollectionSchema:
+    messagehistoryResponse:
       type: object
       properties:
         Count:
@@ -14219,7 +14219,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    messageinformationCollectionSchema:
+    messageinformationResponse:
       type: object
       properties:
         Count:
@@ -14258,7 +14258,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    messagesentstatisticsCollectionSchema:
+    messagesentstatisticsResponse:
       type: object
       properties:
         Count:
@@ -14323,7 +14323,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    messagestateCollectionSchema:
+    messagestateResponse:
       type: object
       properties:
         Count:
@@ -14346,7 +14346,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    messagestatisticsCollectionSchema:
+    messagestatisticsResponse:
       type: object
       properties:
         Count:
@@ -14401,7 +14401,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    metasenderCollectionSchema:
+    metasenderResponse:
       type: object
       properties:
         Count:
@@ -14430,7 +14430,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    myprofileCollectionSchema:
+    myprofileResponse:
       type: object
       properties:
         Count:
@@ -14487,7 +14487,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    newsletterCollectionSchema:
+    newsletterResponse:
       type: object
       properties:
         Count:
@@ -14585,7 +14585,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    newslettertemplateCollectionSchema:
+    newslettertemplateResponse:
       type: object
       properties:
         Count:
@@ -14634,7 +14634,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    newslettertemplatecategoryCollectionSchema:
+    newslettertemplatecategoryResponse:
       type: object
       properties:
         Count:
@@ -14664,7 +14664,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    openinformationCollectionSchema:
+    openinformationResponse:
       type: object
       properties:
         Count:
@@ -14698,7 +14698,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    openstatisticsCollectionSchema:
+    openstatisticsResponse:
       type: object
       properties:
         Count:
@@ -14719,7 +14719,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    parserouteCollectionSchema:
+    parserouteResponse:
       type: object
       properties:
         Count:
@@ -14746,7 +14746,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    preferencesCollectionSchema:
+    preferencesResponse:
       type: object
       properties:
         Count:
@@ -14772,7 +14772,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    presetCollectionSchema:
+    presetResponse:
       type: object
       properties:
         Count:
@@ -14803,7 +14803,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    returnpathCollectionSchema:
+    returnpathResponse:
       type: object
       properties:
         Count:
@@ -14822,7 +14822,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    senderCollectionSchema:
+    senderResponse:
       type: object
       properties:
         Count:
@@ -14857,7 +14857,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    senderstatisticsCollectionSchema:
+    senderstatisticsResponse:
       type: object
       properties:
         Count:
@@ -14906,7 +14906,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    statcountersCollectionSchema:
+    statcountersResponse:
       type: object
       properties:
         Count:
@@ -14965,7 +14965,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    templateCollectionSchema:
+    templateResponse:
       type: object
       properties:
         Count:
@@ -15008,7 +15008,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    toplinkclickedCollectionSchema:
+    toplinkclickedResponse:
       type: object
       properties:
         Count:
@@ -15029,7 +15029,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    userCollectionSchema:
+    userResponse:
       type: object
       properties:
         Count:
@@ -15069,7 +15069,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    useractivityCollectionSchema:
+    useractivityResponse:
       type: object
       properties:
         Count:
@@ -15090,7 +15090,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    useragentCollectionSchema:
+    useragentResponse:
       type: object
       properties:
         Count:
@@ -15117,7 +15117,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    useragentstatisticsCollectionSchema:
+    useragentstatisticsResponse:
       type: object
       properties:
         Count:
@@ -15143,7 +15143,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    widgetCollectionSchema:
+    widgetResponse:
       type: object
       properties:
         Count:
@@ -15188,7 +15188,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    widgetcustomvalueCollectionSchema:
+    widgetcustomvalueResponse:
       type: object
       properties:
         Count:
@@ -15218,7 +15218,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    workflowCollectionSchema:
+    workflowResponse:
       type: object
       properties:
         Count:
@@ -15245,7 +15245,7 @@ components:
         Total:
           type: integer
           description: Total number of items available
-    workflowstatisticsCollectionSchema:
+    workflowstatisticsResponse:
       type: object
       properties:
         Count:

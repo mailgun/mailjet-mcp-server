@@ -141,20 +141,13 @@ export function openapiToZod(schema, fullSpec) {
 
   // Handle schema references (e.g. #/components/schemas/...)
   if (schema.$ref) {
-    // For #/components/schemas/EventSeverityType type references
+    // For #/components/schemas/ type references
     if (schema.$ref.startsWith("#/")) {
       const refPath = schema.$ref.substring(2).split("/");
-
-      // Navigate through the object using the path segments
       /** @type any */
       let referenced = fullSpec;
       for (const segment of refPath) {
         if (!referenced || !referenced[segment]) {
-          // If we can't resolve it but know it's EventSeverityType, use our knowledge
-          if (segment === "EventSeverityType" || schema.$ref.endsWith("EventSeverityType")) {
-            return z.enum(["temporary", "permanent"]).describe("Filter by event severity");
-          }
-
           console.error(`Failed to resolve reference: ${schema.$ref}, segment: ${segment}`);
           return z.any().describe(`Failed reference: ${schema.$ref}`);
         }
@@ -284,7 +277,6 @@ export function processRequestBody(requestBody, paramsSchema, openApiSpec) {
 
   let bodySchema = requestBody.content[contentType].schema;
 
-  // TODO: Remove if not needed
   // Handle schema references.
   if (bodySchema?.$ref) {
     bodySchema = resolveReference(bodySchema.$ref, openApiSpec);
