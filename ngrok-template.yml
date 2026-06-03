@@ -1,0 +1,10 @@
+# This is a template for the ngrok configuration file.
+# You can copy this and replace the values with your own and move it to ngrok.yml.
+# run -> "ngrok config check" to get your local ngrok configuration file path.
+version: 1
+authtoken: someToken # Your ngrok authtoken, you can get it from your ngrok dashboard
+tunnels:
+  auth:
+    proto: http
+    addr: https://localhost:3003 # Or whatever port your local server runs on
+    domain: https://pox-undesired-trimmer.ngrok-free.dev # Check your server:tunnel configuration for the correct domain
