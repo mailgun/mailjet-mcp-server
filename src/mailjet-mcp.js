@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import yaml from "js-yaml";
@@ -13,9 +12,14 @@ import packageInfo from "../package.json" with { type: "json" };
 
 const __dirname = import.meta.dirname;
 
+export const mcpVersion = packageInfo.version
+// Headers that will be used to identify MCP as a source for Mailjet request generated
+export const mcpRequestHeaders = {
+  "User-Agent": `Mailjet/MCP-SERVER-HTTP/${mcpVersion}`
+}
 export const server = new McpServer({
   name: "mailjet",
-  version: packageInfo.version,
+  version: mcpVersion,
 });
 
 // Mailjet API authentication credentials in the documented BASIC Auth form "api_key:secret_key"
@@ -25,7 +29,7 @@ const API_REGION = process.env.MAILJET_API_REGION?.toLowerCase();
 // API server hostname based on region
 const API_HOSTNAME = `api.${API_REGION ? `${API_REGION}.` : ""}mailjet.com`;
 // Path to openapi spec file
-const OPENAPI_SPEC = resolve(__dirname, "openapi-mailjet.yaml");
+export const OPENAPI_SPEC = resolve(__dirname, "openapi-mailjet.yaml");
 
 /**
  * Extracts all endpoints from the OpenAPI specification and organizes them by HTTP method.
@@ -423,14 +427,15 @@ export function appendQueryString(path, queryParams) {
 
   return `${path}?${queryString.toString()}`;
 }
+
 const getRequestOptionsMCPForAuth = () => {
   const auth = Buffer.from(`${API_KEY}`).toString("base64")
   return {
     hostname: API_HOSTNAME,
     headers: {
+      ...mcpRequestHeaders,
       Authorization: `Basic ${auth}`,
       "Content-Type": "application/json",
-      "User-Agent": `Mailjet/MCP-SERVER-STDIO/${packageInfo.version}`,
     },
   }
 }
@@ -440,15 +445,20 @@ const getRequestOptionsMCPForAuth = () => {
  * @param {keyof ReturnType<typeof extractEndpoints>} method - HTTP method (GET, POST, etc.)
  * @param {string} path - API endpoint path
  * @param {Record<string, string | number> | null} data - Request payload data (for POST/PUT requests)
+ * @param userContext - User context containing credentials
  * @returns {Promise<JSON>} - Response data as JSON
  */
-export async function makeMailjetRequest(method, path, data = null) {
+export async function makeMailjetRequest(method, path, data = null, userContext = {}) {
   return new Promise((resolve, reject) => {
     // Normalize path format (handle paths with or without leading slash)
     const cleanPath = path.startsWith("/") ? path.substring(1) : path;
 
+    const { apiKey: sessionApiKey, secretKey: sessionSecretKey } = userContext;
+    // Enabling to both use the mcp server running this file as it is or importing the logic to external project
+    const API_KEY = sessionApiKey && sessionSecretKey ? `${sessionApiKey}:${sessionSecretKey}` : process.env.MAILJET_API_KEY;
+
     if (!API_KEY) {
-      throw new Error(`Required MAILJET_API_KEY environment variable is missing`);
+      reject(`Required MAILJET_API_KEY environment variable is missing`);
     }
 
     const options = {
@@ -470,6 +480,7 @@ export async function makeMailjetRequest(method, path, data = null) {
           const parsedData = JSON.parse(responseData);
           if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
             resolve(parsedData);
+
           } else {
             reject(new Error(`Mailjet API error: ${parsedData.message || responseData}`));
           }
@@ -556,9 +567,11 @@ export async function validateMailjetKeys(credentials) {
  * @param {keyof ReturnType<typeof extractEndpoints>} method - Supported methods (GET, POST, etc.)
  * @param {string} path - API endpoint path
  * @param {NonNullable<ReturnType<typeof getOperationDetails>>['operation']} operation - OpenAPI operation object
+ * @param serverInstance - MCP server instance to register the tool on (defaults to main server)
+ * @param userContext - User context to pass to tool, containing credentials
  */
-export function registerTool(toolId, toolDescription, paramsSchema, method, path, operation) {
-  server.tool(toolId, toolDescription, paramsSchema, async (params) => {
+export function registerTool(toolId, toolDescription, paramsSchema, method, path, operation, serverInstance = server, userContext = {}) {
+  serverInstance.tool(toolId, toolDescription, paramsSchema, async (params) => {
     try {
       const { actualPath, remainingParams } = processPathParameters(path, operation, params);
       const { queryParams, bodyParams } = separateParameters(remainingParams, operation, method);
@@ -569,6 +582,7 @@ export function registerTool(toolId, toolDescription, paramsSchema, method, path
         method,
         finalPath,
         method === "GET" ? null : bodyParams,
+        userContext
       );
 
       return {
@@ -595,32 +609,27 @@ export function registerTool(toolId, toolDescription, paramsSchema, method, path
 /**
  * Generates MCP tools from the OpenAPI specification
  * @param {z.infer<typeof MailjetApiSchema>} openApiSpec - Parsed OpenAPI specification
+ * @param serverInstance - MCP server instance to register tools on (defaults to main server)
+ * @param userContext - User context to pass to tool handlers, containing credentials
  */
-export function generateToolsFromOpenApi(openApiSpec) {
+export function generateToolsFromOpenApi(openApiSpec, serverInstance = server, userContext = {}) {
   const endpoints = extractEndpoints(openApiSpec);
-
   for (const path of endpoints.GET) {
     const method = "GET";
     try {
       const operationDetails = getOperationDetails(openApiSpec, method, path);
-
-      if (!operationDetails) {
-        console.warn(`Could not match endpoint: ${method} ${path} in OpenAPI spec`);
-        continue;
-      }
+      if (!operationDetails) continue;
 
       const { operation, operationId } = operationDetails;
       const paramsSchema = buildParamsSchema(operation, openApiSpec);
       const toolId = sanitizeToolId(operationId);
       const toolDescription = operation?.summary || `${method.toUpperCase()} ${path}`;
 
-      registerTool(toolId, toolDescription, paramsSchema, method, path, operation);
-    } catch (/** @type {any} */ error) {
+      registerTool(toolId, toolDescription, paramsSchema, method, path, operation, serverInstance, userContext);
+    } catch (error) {
       console.error(`Failed to process endpoint ${method} ${path}: ${error.message}`);
     }
   }
-
-  return;
 }
 
 /**
@@ -630,7 +639,7 @@ export async function main() {
   try {
     const isValidApiKey = await validateMailjetKeys(API_KEY)
 
-    if(!API_KEY || !isValidApiKey) {
+    if (!API_KEY || !isValidApiKey) {
       throw new Error(`⚠️  Please provide a valid MAILJET_API_KEY environment variable before running the mcp server.`);
     }
 
@@ -651,7 +660,7 @@ export async function main() {
     await server.connect(transport);
     // This is an STDIO server and log msgs are sent to stdio by default
     // So send to console.error to avoid errors on server startup
-    console.error(`Mailjet MCP Server ${packageInfo.version} running on stdio`);
+    console.error(`Mailjet MCP Server ${mcpVersion} running on stdio`);
   } catch (error) {
     console.error("Fatal error in main():", error);
     if (process.env.NODE_ENV !== "test") {
@@ -660,7 +669,9 @@ export async function main() {
   }
 }
 
+// Identify if the file is currently imported by another project, which should prevent from firing main
+const isDirectRun = process.argv[1] !== import.meta.filename;
 // Only auto-execute when not in test environment
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV !== "test" && !isDirectRun) {
   main();
 }
