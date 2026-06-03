@@ -5,9 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2026-07-07
+
+### Added
+
+- **Module Architecture**:
+  - Created `src/index.js` as the primary entry point, exporting core MCP and OpenAPI schema logic.
+  - Added an `"exports"` block to `package.json` to support external `import` and `require`.
+  - Implemented security to prevent auto-execution when `mailjet-mcp.js` is imported as a library.
+- **Tooling & Housekeeping**:
+  - Added a new `npm run start` script using Node's native `--watch` flag.
+  - Appended `/ngrok.yml` and `.npmrc` to `.gitignore` rules.
+
+### Changed
+
+- **Dynamic Context & Credentials**:
+  - Updated `generateToolsFromOpenApi`, `registerTool`, and `makeMailjetRequest` to accept dynamic `serverInstance` and `userContext` parameters.
+  - Fixed an unhandled exception in `makeMailjetRequest` by using `reject()` instead of throwing an error directly inside the Promise constructor.
+- **Configuration & Metadata**:
+  - Extracted and exported `OPENAPI_SPEC`, `mcpVersion`, and `mcpRequestHeaders`.
+  - Updated the standard `User-Agent` header from `STDIO` to `HTTP` when used through external project.
+
 ## [1.0.3] - 2026-06-25
 
 ### Added
+
 - **Introduced request options helper function** — centralized HTTP configuration for the Mailjet API.
   - Added the `getRequestOptionsMCPForAuth()` helper function to encapsulate the `hostname` and `headers` definitions (including `Authorization`, `Content-Type`, and `User-Agent`), promoting reuse across different request methods.
 
@@ -73,6 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `pnpm/action-setup` → pinned SHA `0e279bb...` (v6.0.8)
   - `pnpm` version locked to `10.33.4`
 
+[1.0.4]: https://github.com/mailgun/mailjet-mcp-server/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/mailgun/mailjet-mcp-server/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/mailgun/mailjet-mcp-server/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/mailgun/mailjet-mcp-server/compare/v1.0.0...v1.0.1

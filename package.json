@@ -1,6 +1,6 @@
 {
   "name": "@mailjet/mailjet-mcp-server",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "bin": {
     "mailjet-mcp-server": "src/mailjet-mcp.js"
@@ -18,7 +18,14 @@
     "LICENSE",
     "README.md"
   ],
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./src/index.js"
+    }
+  },
   "scripts": {
+    "start": "node --watch src/mailjet-mcp.js",
     "test": "NODE_ENV=test node --test tests/mailjet-mcp.test.js"
   },
   "keywords": [
