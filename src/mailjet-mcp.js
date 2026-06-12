@@ -5,7 +5,7 @@ import https from "node:https";
 import { createReadStream } from "node:fs";
 import { resolve } from "node:path";
 import process from "node:process";
-import { z } from "zod/v3";
+import { z } from "zod";
 import { MailjetApiSchema } from "./mailjet-openapi-schema.js";
 import packageInfo from "../package.json" with { type: "json" };
 
@@ -21,7 +21,7 @@ const API_KEY = process.env.MAILJET_API_KEY;
 // Alternate non-US region of the API server
 const API_REGION = process.env.MAILJET_API_REGION?.toLowerCase();
 // API server hostname based on region
-const API_HOSTNAME = `api.${API_REGION ? `${API_REGION}.` : ''}mailjet.com`;
+const API_HOSTNAME = `api.${API_REGION ? `${API_REGION}.` : ""}mailjet.com`;
 // Path to openapi spec file
 const OPENAPI_SPEC = resolve(__dirname, "openapi-mailjet.yaml");
 
@@ -124,7 +124,9 @@ export function getOperationDetails(openApiSpec, method, path) {
     /** @type {NonNullable<z.infer<typeof MailjetApiSchema>["paths"][string]["delete" | "get" | "post" | "put"]>} */
     // @ts-ignore We know this exists because of the if condition above
     operation: openApiSpec.paths[path][lowerMethod],
-    operationId: openApiSpec.paths[path]["get"]?.operationId ?? `${method}-${sanitizeToolId(path).replace(/-+/g, "-")}`,
+    operationId:
+      openApiSpec.paths[path]["get"]?.operationId ??
+      `${method}-${sanitizeToolId(path).replace(/-+/g, "-")}`,
   };
 }
 
@@ -196,7 +198,7 @@ export function openapiToZod(schema, fullSpec) {
 
     case "object":
       if (!schema.properties) {
-        return z.record(z.any(), z.any());
+        return z.record(z.string(), z.any());
       }
 
       /** @type Record<string, z.ZodType> */
@@ -224,11 +226,17 @@ export function openapiToZod(schema, fullSpec) {
       // For YAML that defines "oneOf", "anyOf", etc.
       if (schema.oneOf) {
         const unionTypes = schema.oneOf.map((/** @type unknown */ s) => openapiToZod(s, fullSpec));
+        if (unionTypes.length === 1) {
+          return unionTypes[0].describe(schema.description || "");
+        }
         return z.union(unionTypes).describe(schema.description || "");
       }
 
       if (schema.anyOf) {
         const unionTypes = schema.anyOf.map((/** @type unknown */ s) => openapiToZod(s, fullSpec));
+        if (unionTypes.length === 1) {
+          return unionTypes[0].describe(schema.description || "");
+        }
         return z.union(unionTypes).describe(schema.description || "");
       }
 
@@ -439,7 +447,7 @@ export async function makeMailjetRequest(method, path, data = null) {
       headers: {
         Authorization: `Basic ${auth}`,
         "Content-Type": "application/json",
-        "User-Agent": `Mailjet/MCP-SERVER-STDIO/${packageInfo.version}`
+        "User-Agent": `Mailjet/MCP-SERVER-STDIO/${packageInfo.version}`,
       },
     };
 
