@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enabled the v4 locale system via `z.config(z.locales.en())`.
   - Fixed `z.record()` call to use an explicit string key type (`z.string()`) as required by v4.
   - Added single-element guard for `z.union()` on `oneOf`/`anyOf` schemas to comply with v4's minimum two-member requirement.
+- **Bumped minimum Node.js requirement** from `>=20.10.0` to `>=20.11.1`
 - **Updated all runtime dependencies**:
   - `@modelcontextprotocol/sdk` `^1.12.0` → `1.29.0`
   - `js-yaml` `^4.1.0` → `4.2.0`
@@ -23,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Updated CI action dependencies**:
   - `actions/checkout` → `v6`
   - `actions/setup-node` → `v6`
+  - Node.js CI version pinned to `20.11.1` to match the minimum supported version
+- **Added `packageManager` field** to `package.json` pinning pnpm to `10.33.4`
 
 ### Fixed
 
