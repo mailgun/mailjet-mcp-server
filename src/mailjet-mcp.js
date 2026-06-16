@@ -24,13 +24,8 @@ export const server = new McpServer({
 
 // API server hostname based on region
 const API_HOSTNAME = `api.mailjet.com`;
-// Used to identify the MPCP server to the Auth Server
-const MAILJET_SERVER_TOKEN = process.env.MAILJET_SERVER_TOKEN;
 // Path to openapi spec file
 const OPENAPI_SPEC = resolve(__dirname, "openapi-mailjet.yaml");
-const AUTH_SERVER = process.env.AUTH_SERVER;
-const OAUTH_PROTECTED_RESOURCE_METADATA = `${AUTH_SERVER}/.well-known/oauth-protected-resource`;
-const WWW_AUTHENTICATE_BEARER = `Bearer resource_metadata="${OAUTH_PROTECTED_RESOURCE_METADATA}"`;
 
 /**
  * Extracts all endpoints from the OpenAPI specification and organizes them by HTTP method.
@@ -436,7 +431,7 @@ export async function makeMailjetRequest(method, path, data = null, credentials)
 
         const {apiKey: sessionApiKey, secretKey: sessionSecretKey} = credentials || {};
         // For now we still allow to use env vars for credentials
-        // TODO: we should probably limit that to dev only and enforce passing credentials from the client in prod for better security
+        // TODO: we should probably limit passing API Keys from env to dev only for better security
         const API_KEY = sessionApiKey && sessionSecretKey ? `${sessionApiKey}:${sessionSecretKey}` : process.env.MAILJET_API_KEY;
 
         if (!API_KEY) {
@@ -449,7 +444,7 @@ export async function makeMailjetRequest(method, path, data = null, credentials)
             hostname: API_HOSTNAME,
             path: `/${cleanPath}`,
             method,
-            // Todo: update this to include session id and maybe change the user agent ?
+            // Todo: update this to include user id for logging purpose on Kibana and maybe change the user agent if usage is coming from resources server?
             headers: {
                 Authorization: `Basic ${auth}`,
                 "Content-Type": "application/json",
@@ -474,9 +469,6 @@ export async function makeMailjetRequest(method, path, data = null, credentials)
                     } else {
                         reject(new Error(`Mailjet API error: ${parsedData.message || responseData}`));
                     }
-
-                    console.error("Response headers:", res.headers);
-                    console.error("Response status:", res.statusCode);
                 } catch (/** @type any */ e) {
                     reject(new Error(`Failed to parse response: ${e.message}`));
                 }
@@ -586,7 +578,8 @@ const getAuthEncryptionKey = () => crypto
     .update(process.env.AUTH_ENCRYPTION_KEY)
     .digest("base64")
     .substr(0, 32)
-// TODO: See if we should import it from commons lib
+
+// Todo: import it from commons int lib when moved to resources server
 export const decrypt = (encryptedText) => {
     try {
         const ALGORITHM = "aes-256-gcm";
@@ -622,6 +615,29 @@ export const decrypt = (encryptedText) => {
         return null;
     }
 };
+
+// Used to identify the MPCP server to the Auth Server
+const MAILJET_SERVER_TOKEN = process.env.MAILJET_SERVER_TOKEN;
+const AUTH_SERVER = process.env.AUTH_SERVER;
+const OAUTH_PROTECTED_RESOURCE_METADATA = `${AUTH_SERVER}/.well-known/oauth-protected-resource`;
+const WWW_AUTHENTICATE_BEARER = `Bearer resource_metadata="${OAUTH_PROTECTED_RESOURCE_METADATA}"`;
+
+// Object containing documentation metadata relatives to well-known configuration (see RFC8615)
+const authEndpointDocumentation = {
+    issuer: AUTH_SERVER,
+    authorization_endpoint: `${AUTH_SERVER}/oauth/authorize`,
+    token_endpoint: `${AUTH_SERVER}/oauth/mcp/callback`,
+    response_types_supported: ["code"],
+    grant_types_supported: ["authorization_code"],
+    code_challenge_methods_supported: ["S256"],
+    registration_endpoint: `${AUTH_SERVER}/api/mcp/register`,
+    revocation_endpoint: `${AUTH_SERVER}/api/mcp/revoke`,
+}
+
+const mcpRequestHeaders = {
+    "mj-server-token": MAILJET_SERVER_TOKEN,
+    "User-Agent": `Mailjet/MCP-SERVER-HTTP/${packageInfo.version}`
+}
 
 /**
  * Main function to initialize and start the MCP server
@@ -664,7 +680,7 @@ async function main() {
                 const sessionId =  req.headers["mcp-session-id"] ?? randomUUID();
 
                 // Use cache if available at first
-                if (sessionCredentials.has(sessionId)) {
+                if (sessionCredentials.has(sessionId) && false) {
                     // The session is already verified and active! Load from cache.
                     const cachedSession = sessionCredentials.get(sessionId);
                     if (cachedSession.token !== token) {
@@ -680,7 +696,7 @@ async function main() {
                     // Check user connection status
                     try {
                         const statusResponse = await axios.get(`${AUTH_SERVER}/api/global/status`, {
-                            headers: {Authorization: `Bearer ${token}`, "mj-server-token": MAILJET_SERVER_TOKEN},
+                            headers: {Authorization: `Bearer ${token}`, ...mcpRequestHeaders},
                         })
                         const {data, status, statusText} = statusResponse || {}
 
@@ -700,7 +716,7 @@ async function main() {
                             .set("WWW-Authenticate", WWW_AUTHENTICATE_BEARER)
                             .json({error: "Unauthorized"});
                         //          Todo: see if we can handle that differently when migrated to resources server,
-                        //           as for now locally mcp-remote does not allow to retrigger authentication flow once the token is expired,
+                        //           as for now in local env mcp-remote does not allow to retrigger authentication flow once the token is expired,
                         //           so we have to return 401 with WWW-Authenticate header to allow the client to know it needs to re-authenticate and get a new token
                         //          .set("WWW-Authenticate", `${WWW_AUTHENTICATE_BEARER}, error="invalid_token", error_description="Token expired"`)
                         //          .json({ error: "Invalid token" });
@@ -729,6 +745,50 @@ async function main() {
                         apiKey: userMailjetApiKey,
                         secretKey: userMailjetSecretKey,
                     });
+
+                    // Handle logout, revoking the tokens
+                    sessionServer.tool(
+                        "revoke-authentication", // Tool ID
+                        "Revokes the current user's authentication token and disconnects the Mailjet integration.", // Description for the LLM
+                        {}, // Empty Zod schema because it doesn't need arguments
+                        async () => {
+                            try {
+                                // Look up the current session's token from your cache
+                                const {token} = sessionCredentials.get(sessionId);
+
+                                if (!token) {
+                                    throw new Error("No active token found to revoke.");
+                                }
+
+                                // Make the call to your Auth Server's revoke endpoint
+                                await axios.post(authEndpointDocumentation.revocation_endpoint,
+                                    { token }, // Or however your revoke endpoint expects the payload
+                                );
+
+                                // Optional: Forcefully clean up the local session immediately
+                                transports.delete(sessionId);
+                                sessionCredentials.delete(sessionId);
+
+                                return {
+                                    content: [
+                                        {
+                                            type: "text",
+                                            text: "✅ Authentication successfully revoked. The session is now disconnected.",
+                                        },
+                                    ],
+                                };
+                            } catch (error) {
+                                return {
+                                    content: [
+                                        {
+                                            type: "text",
+                                            text: `❌ Failed to revoke authentication: ${error.message}`,
+                                        },
+                                    ],
+                                };
+                            }
+                        }
+                    );
 
                     await sessionServer.connect(transport);
                     transports.set(sessionId, transport);
@@ -777,15 +837,7 @@ async function main() {
         // As part of OAuth 2.0 specifications (RFC 8414), endpoint below is designed for MCP client to dynamically discover information to interact with the authorization server.
         app.get("/.well-known/oauth-authorization-server", (_req, res) => {
             // TODO: update with right endpoints depending on if we harmonize global and canva auth endpoints
-            res.status(200).json({
-                issuer: AUTH_SERVER,
-                authorization_endpoint: `${AUTH_SERVER}/api/mcp/authorize`,
-                token_endpoint: `${AUTH_SERVER}/oauth/canva/callback`,
-                response_types_supported: ["code"],
-                grant_types_supported: ["authorization_code"],
-                code_challenge_methods_supported: ["S256"],
-                registration_endpoint: `${AUTH_SERVER}/api/mcp/link-user`,
-            });
+            res.status(200).json(authEndpointDocumentation);
         });
 
         app.listen(3000, () => {
