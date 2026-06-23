@@ -421,15 +421,15 @@ export function appendQueryString(path, queryParams) {
  * @param {keyof ReturnType<typeof extractEndpoints>} method - HTTP method (GET, POST, etc.)
  * @param {string} path - API endpoint path
  * @param {Record<string, string | number> | null} data - Request payload data (for POST/PUT requests)
- * @param credentials - User credentials containing API key and secret key
+ * @param userContext - User context containing credentials and client name
  * @returns {Promise<JSON>} - Response data as JSON
  */
-export async function makeMailjetRequest(method, path, data = null, credentials) {
+export async function makeMailjetRequest(method, path, data = null, userContext) {
     return new Promise((resolve, reject) => {
         // Normalize path format (handle paths with or without leading slash)
         const cleanPath = path.startsWith("/") ? path.substring(1) : path;
 
-        const {apiKey: sessionApiKey, secretKey: sessionSecretKey} = credentials || {};
+        const {apiKey: sessionApiKey, secretKey: sessionSecretKey, clientName} = userContext || {};
         // For now we still allow to use env vars for credentials
         // TODO: we should probably limit passing API Keys from env to dev only for better security
         const API_KEY = sessionApiKey && sessionSecretKey ? `${sessionApiKey}:${sessionSecretKey}` : process.env.MAILJET_API_KEY;
@@ -447,8 +447,10 @@ export async function makeMailjetRequest(method, path, data = null, credentials)
             // Todo: update this to include user id for logging purpose on Kibana and maybe change the user agent if usage is coming from resources server?
             headers: {
                 Authorization: `Basic ${auth}`,
+                "Client-Name": clientName,
                 "Content-Type": "application/json",
-                "User-Agent": `Mailjet/MCP-SERVER-STDIO/${packageInfo.version}`
+                // TODO: discuss passing clientName as part of UA, see if that's actually the best fit
+                "User-Agent": `Mailjet/MCP-SERVER-STDIO/${packageInfo.version}/${clientName}`,
             },
         };
 
@@ -509,9 +511,9 @@ export async function makeMailjetRequest(method, path, data = null, credentials)
  * @param {string} path - API endpoint path
  * @param {NonNullable<ReturnType<typeof getOperationDetails>>['operation']} operation - OpenAPI operation object
  * @param serverInstance - MCP server instance to register the tool on (defaults to main server)
- * @param credentials - User credentials to pass to the tool
+ * @param userContext - User context to pass to tool, containing credentials and client name
  */
-export function registerTool(toolId, toolDescription, paramsSchema, method, path, operation, serverInstance = server, credentials) {
+export function registerTool(toolId, toolDescription, paramsSchema, method, path, operation, serverInstance = server, userContext) {
     serverInstance.tool(toolId, toolDescription, paramsSchema, async (params) => {
         try {
             const {actualPath, remainingParams} = processPathParameters(path, operation, params);
@@ -523,7 +525,7 @@ export function registerTool(toolId, toolDescription, paramsSchema, method, path
                 method,
                 finalPath,
                 method === "GET" ? null : bodyParams,
-                credentials
+                userContext
             );
 
             return {
@@ -551,9 +553,9 @@ export function registerTool(toolId, toolDescription, paramsSchema, method, path
  * Generates MCP tools from the OpenAPI specification
  * @param {z.infer<typeof MailjetApiSchema>} openApiSpec - Parsed OpenAPI specification
  * @param serverInstance - MCP server instance to register tools on (defaults to main server)
- * @param credentials -User credentials to pass to tool handlers
+ * @param userContext - User context to pass to tool handlers, containing credentials and client name
  */
-export function generateToolsFromOpenApi(openApiSpec, serverInstance = server, credentials = {}) {
+export function generateToolsFromOpenApi(openApiSpec, serverInstance = server, userContext = {}) {
     const endpoints = extractEndpoints(openApiSpec);
     for (const path of endpoints.GET) {
         const method = "GET";
@@ -566,7 +568,7 @@ export function generateToolsFromOpenApi(openApiSpec, serverInstance = server, c
             const toolId = sanitizeToolId(operationId);
             const toolDescription = operation?.summary || `${method.toUpperCase()} ${path}`;
 
-            registerTool(toolId, toolDescription, paramsSchema, method, path, operation, serverInstance, credentials);
+            registerTool(toolId, toolDescription, paramsSchema, method, path, operation, serverInstance, userContext);
         } catch (error) {
             console.error(`Failed to process endpoint ${method} ${path}: ${error.message}`);
         }
@@ -662,9 +664,15 @@ async function main() {
         // TODO: when migrating to resources server, create Redis key/value with a TTL, ensuring the sessions cannot grow indefinitely
         const sessionCredentials = new Map();
 
+        // app.use(express.json());
+
         app.post("/mcp", async (req, res) => {
             try {
                 const authHeader = req.headers["authorization"];
+                // Intercept AI agent name, fallback to a sample client name since local setup with proxy prevents from passing the real one
+                // Todo: remove fallback when we are able to test this on staging
+                const clientName = req.body?.params?.clientInfo?.name || ["cursor", "claude", "chat-gpt"][Math.floor(Math.random()*3)];
+                const clientSpecificHeaders = {...mcpRequestHeaders, clientName}
 
                 // Check if the Authorization header is present, trigger auth if not
                 if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -696,7 +704,7 @@ async function main() {
                     // Check user connection status
                     try {
                         const statusResponse = await axios.get(`${AUTH_SERVER}/api/global/status`, {
-                            headers: {Authorization: `Bearer ${token}`, ...mcpRequestHeaders},
+                            headers: {Authorization: `Bearer ${token}`, ...clientSpecificHeaders},
                         })
                         const {data, status, statusText} = statusResponse || {}
 
@@ -705,7 +713,7 @@ async function main() {
 
                         // TODO: Once moved to resources server, make sure the Redis cache expire approximately at the same time as access token,
                         //  ensuring the user is set as active on Auth server global middleware
-                        sessionCredentials.set(sessionId, {apiKey, apiSecret, token, userId})
+                        sessionCredentials.set(sessionId, {apiKey, apiSecret, clientName, token, userId})
 
                         userMailjetApiKey = apiKey
                         userMailjetSecretKey = decrypt(apiSecret)
@@ -744,6 +752,7 @@ async function main() {
                     generateToolsFromOpenApi(parsedOpenApiSpec, sessionServer, {
                         apiKey: userMailjetApiKey,
                         secretKey: userMailjetSecretKey,
+                        clientName,
                     });
 
                     // Handle logout, revoking the tokens
@@ -763,6 +772,7 @@ async function main() {
                                 // Make the call to your Auth Server's revoke endpoint
                                 await axios.post(authEndpointDocumentation.revocation_endpoint,
                                     { token }, // Or however your revoke endpoint expects the payload
+                                    {headers: clientSpecificHeaders},
                                 );
 
                                 // Optional: Forcefully clean up the local session immediately
