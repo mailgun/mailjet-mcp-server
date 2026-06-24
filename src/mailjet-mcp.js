@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import yaml from "js-yaml";
@@ -499,6 +501,44 @@ export async function makeMailjetRequest(method, path, data = null) {
 }
 
 /**
+ * Validates Mailjet API credentials by making a read-only test request.
+ *
+ * @param {string} credentials - The Mailjet API key in "PUBLIC_KEY:SECRET_KEY" format.
+ * @returns {Promise<boolean>} - Returns true if the keys are valid, false otherwise.
+ */
+export async function validateMailjetKeys(credentials) {
+  // Ensure the credentials string exists and is properly formatted
+  if (!credentials || typeof credentials !== 'string' || !credentials.includes(':')) {
+    return false;
+  }
+
+  // Mailjet API requires Basic Authentication (Base64 encoded string of "public:private")
+  const encodedAuth = Buffer.from(credentials).toString('base64');
+
+  try {
+    const response = await fetch('https://api.mailjet.com/v3/REST/user', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Basic ${encodedAuth}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    // If Mailjet returns a 200 OK, the keys are perfectly valid
+    if (response.ok) {
+      return true;
+    }
+
+    // A 401 Unauthorized or any other non-2xx status means invalid keys/account
+    return false;
+
+  } catch (error) {
+    // Catch network errors (e.g., DNS failure, no internet connection)
+    return false;
+  }
+}
+
+/**
  * Registers a tool with the MCP server
  * @param {string} toolId - Unique tool identifier
  * @param {string} toolDescription - Human-readable description
@@ -578,6 +618,12 @@ export function generateToolsFromOpenApi(openApiSpec) {
  */
 export async function main() {
   try {
+    const isValidApiKey = await validateMailjetKeys(API_KEY)
+
+    if(!API_KEY || !isValidApiKey) {
+      throw new Error(`⚠️  Please provide a valid MAILJET_API_KEY env var before running the mcp server.`);
+    }
+
     // Load and parse OpenAPI spec
     const openApiSpec = await loadOpenApiSpec(OPENAPI_SPEC);
 

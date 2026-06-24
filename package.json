@@ -1,7 +1,17 @@
 {
-  "name": "mailjet-mcp-server",
-  "version": "1.0.1",
+  "name": "@mailjet/mailjet-mcp-server",
+  "version": "1.0.2",
   "type": "module",
+  "bin": {
+    "mailjet-mcp-server": "src/mailjet-mcp.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mailgun/mailjet-mcp-server.git"
+  },
   "scripts": {
     "test": "NODE_ENV=test node --test tests/mailjet-mcp.test.js"
   },

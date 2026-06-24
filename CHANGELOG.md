@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-06-25
+
+### Added
+
+- **Startup API credential validation** — introduced pre-flight configuration safety checks to the initialization workflow.
+  - Added the `validateMailjetKeys()` helper function to verify credentials against `https://api.mailjet.com/v3/REST/user` via a secure HTTP request.
+  - Integrated a validation guard in the `main()` server loop to halt startup and throw an error if a valid `MAILJET_API_KEY` is not supplied in the environment.
+
+### Changed
+
+- **Package scoping and version bump** — transitioned the package configuration in `package.json` to a scoped release.
+  - Renamed the package from the unscoped `mailjet-mcp-server` to the scoped `@mailjet/mailjet-mcp-server`.
+  - Bumped the package version from `1.0.1` to `1.0.2`.
+  - Added `publishConfig` (setting access to public) and the explicit GitHub `repository` metadata block.
+- **Enabled global NPX CLI support** — configured the package to allow seamless execution and desktop app integration.
+  - Added the `bin` routing mapping (`"mailjet-mcp-server": "src/mailjet-mcp.js"`) to `package.json`.
+  - Restored the `#!/usr/bin/env node` shebang to the top of `src/mailjet-mcp.js`.
+  - Changed the execution file mode of `src/mailjet-mcp.js` from standard (`100644`) to executable (`100755`).
+  - Added `.npmrc` to the `.gitignore` rules.
+- **Lockfile optimization and dependency alignment** — restructured and simplified package mapping.
+  - Downgraded the `pnpm-lock.yaml` layout from lockfile version `9.0` back to `6.0`, resolving pnpm integration structure.
+  - Removed the complex multi-project `importers` scheme from the lockfile for a direct dependency tree.
+  - Updated `@types/node` from `22.19.21` to `22.20.0`.
+  - Re-resolved transitive package targets (e.g. upgraded `cors` to `2.8.6` and unified associated middleware sub-packages).
+- **Expanded Quick Start & distribution docs** — updated the `README.md` to assist with remote execution.
+  - Added dedicated instructions for executing the server directly using `npx mailjet-mcp-server`.
+  - Included a configuration guide for linking the server to AI desktop applications using the `mcpServers` setting.
+  - Appended a new **Publishing** documentation section details of the official Mailjet NPM registry.
+
+---
+
 ## [1.0.1] - 2026-06-11
 
 ### Changed
