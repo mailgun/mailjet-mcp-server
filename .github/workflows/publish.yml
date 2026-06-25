@@ -1,0 +1,39 @@
+name: Run Publish
+
+on:
+  release:
+    types:
+      - created
+
+# Required to mint the OIDC token for NPM Trusted Publishing
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10.33.4
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run package publishing on NPM
+        # --provenance is needed for OIDC handshakes while using NPM Trusted Publishing
+        run: npm publish --access public --provenance
