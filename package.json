@@ -12,6 +12,12 @@
     "type": "git",
     "url": "git+https://github.com/mailgun/mailjet-mcp-server.git"
   },
+  "files": [
+    "src",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "test": "NODE_ENV=test node --test tests/mailjet-mcp.test.js"
   },
