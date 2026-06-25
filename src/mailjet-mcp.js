@@ -507,7 +507,7 @@ export async function makeMailjetRequest(method, path, data = null) {
 /**
  * Validates Mailjet API credentials by making a read-only test request.
  *
- * @param {string} credentials - The Mailjet API key in "PUBLIC_KEY:SECRET_KEY" format.
+ * @param {string=} credentials - The Mailjet API key in "PUBLIC_KEY:SECRET_KEY" format.
  * @returns {Promise<boolean>} - Returns true if the keys are valid, false otherwise.
  */
 export async function validateMailjetKeys(credentials) {
