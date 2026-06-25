@@ -423,6 +423,17 @@ export function appendQueryString(path, queryParams) {
 
   return `${path}?${queryString.toString()}`;
 }
+const getRequestOptionsMCPForAuth = () => {
+  const auth = Buffer.from(`${API_KEY}`).toString("base64")
+  return {
+    hostname: API_HOSTNAME,
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "application/json",
+      "User-Agent": `Mailjet/MCP-SERVER-STDIO/${packageInfo.version}`,
+    },
+  }
+}
 
 /**
  * Makes an authenticated request to the Mailjet API
@@ -440,17 +451,10 @@ export async function makeMailjetRequest(method, path, data = null) {
       throw new Error(`Required MAILJET_API_KEY environment variable is missing`);
     }
 
-    // Create basic auth credentials from API key
-    const auth = Buffer.from(`${API_KEY}`).toString("base64");
     const options = {
-      hostname: API_HOSTNAME,
+      ...getRequestOptionsMCPForAuth(),
       path: `/${cleanPath}`,
-      method: method,
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/json",
-        "User-Agent": `Mailjet/MCP-SERVER-STDIO/${packageInfo.version}`,
-      },
+      method,
     };
 
     // Create and send the HTTP request
@@ -507,35 +511,41 @@ export async function makeMailjetRequest(method, path, data = null) {
  * @returns {Promise<boolean>} - Returns true if the keys are valid, false otherwise.
  */
 export async function validateMailjetKeys(credentials) {
-  // Ensure the credentials string exists and is properly formatted
-  if (!credentials || typeof credentials !== 'string' || !credentials.includes(':')) {
-    return false;
-  }
-
-  // Mailjet API requires Basic Authentication (Base64 encoded string of "public:private")
-  const encodedAuth = Buffer.from(credentials).toString('base64');
-
-  try {
-    const response = await fetch('https://api.mailjet.com/v3/REST/user', {
-      method: 'GET',
-      headers: {
-        'Authorization': `Basic ${encodedAuth}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    // If Mailjet returns a 200 OK, the keys are perfectly valid
-    if (response.ok) {
-      return true;
+  return new Promise((resolve, reject) => {
+    // Ensure the credentials string exists and is properly formatted
+    if (!credentials || typeof credentials !== 'string' || !credentials.includes(':')) {
+      resolve(false);
     }
 
-    // A 401 Unauthorized or any other non-2xx status means invalid keys/account
-    return false;
+    try {
+      const options = {
+        ...getRequestOptionsMCPForAuth(),
+        method: 'GET',
+        path: '/v3/REST/user'
+      };
 
-  } catch (error) {
-    // Catch network errors (e.g., DNS failure, no internet connection)
-    return false;
-  }
+      const req = https.request(options, (res) => {
+        let responseData = "";
+
+        res.on("data", (chunk) => {
+          responseData += chunk;
+        });
+
+        res.on("end", () => {
+          if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        });
+      });
+
+      req.end();
+    } catch (error) {
+      // Catch network errors (e.g., DNS failure, no internet connection)
+      reject(error)
+    }
+  })
 }
 
 /**
@@ -621,7 +631,7 @@ export async function main() {
     const isValidApiKey = await validateMailjetKeys(API_KEY)
 
     if(!API_KEY || !isValidApiKey) {
-      throw new Error(`⚠️  Please provide a valid MAILJET_API_KEY env var before running the mcp server.`);
+      throw new Error(`⚠️  Please provide a valid MAILJET_API_KEY environment variable before running the mcp server.`);
     }
 
     // Load and parse OpenAPI spec
