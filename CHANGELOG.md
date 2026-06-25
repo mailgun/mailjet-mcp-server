@@ -73,4 +73,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `pnpm/action-setup` → pinned SHA `0e279bb...` (v6.0.8)
   - `pnpm` version locked to `10.33.4`
 
+[1.0.3]: https://github.com/mailgun/mailjet-mcp-server/compare/v1.0.2...v1.0.3
+[1.0.2]: https://github.com/mailgun/mailjet-mcp-server/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/mailgun/mailjet-mcp-server/compare/v1.0.0...v1.0.1
