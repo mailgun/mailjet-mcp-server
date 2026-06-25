@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import yaml from "js-yaml";
@@ -421,6 +423,17 @@ export function appendQueryString(path, queryParams) {
 
   return `${path}?${queryString.toString()}`;
 }
+const getRequestOptionsMCPForAuth = () => {
+  const auth = Buffer.from(`${API_KEY}`).toString("base64")
+  return {
+    hostname: API_HOSTNAME,
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "application/json",
+      "User-Agent": `Mailjet/MCP-SERVER-STDIO/${packageInfo.version}`,
+    },
+  }
+}
 
 /**
  * Makes an authenticated request to the Mailjet API
@@ -438,17 +451,10 @@ export async function makeMailjetRequest(method, path, data = null) {
       throw new Error(`Required MAILJET_API_KEY environment variable is missing`);
     }
 
-    // Create basic auth credentials from API key
-    const auth = Buffer.from(`${API_KEY}`).toString("base64");
     const options = {
-      hostname: API_HOSTNAME,
+      ...getRequestOptionsMCPForAuth(),
       path: `/${cleanPath}`,
-      method: method,
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/json",
-        "User-Agent": `Mailjet/MCP-SERVER-STDIO/${packageInfo.version}`,
-      },
+      method,
     };
 
     // Create and send the HTTP request
@@ -496,6 +502,50 @@ export async function makeMailjetRequest(method, path, data = null) {
 
     req.end();
   });
+}
+
+/**
+ * Validates Mailjet API credentials by making a read-only test request.
+ *
+ * @param {string} credentials - The Mailjet API key in "PUBLIC_KEY:SECRET_KEY" format.
+ * @returns {Promise<boolean>} - Returns true if the keys are valid, false otherwise.
+ */
+export async function validateMailjetKeys(credentials) {
+  return new Promise((resolve, reject) => {
+    // Ensure the credentials string exists and is properly formatted
+    if (!credentials || typeof credentials !== 'string' || !credentials.includes(':')) {
+      resolve(false);
+    }
+
+    try {
+      const options = {
+        ...getRequestOptionsMCPForAuth(),
+        method: 'GET',
+        path: '/v3/REST/user'
+      };
+
+      const req = https.request(options, (res) => {
+        let responseData = "";
+
+        res.on("data", (chunk) => {
+          responseData += chunk;
+        });
+
+        res.on("end", () => {
+          if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        });
+      });
+
+      req.end();
+    } catch (error) {
+      // Catch network errors (e.g., DNS failure, no internet connection)
+      reject(error)
+    }
+  })
 }
 
 /**
@@ -578,6 +628,12 @@ export function generateToolsFromOpenApi(openApiSpec) {
  */
 export async function main() {
   try {
+    const isValidApiKey = await validateMailjetKeys(API_KEY)
+
+    if(!API_KEY || !isValidApiKey) {
+      throw new Error(`⚠️  Please provide a valid MAILJET_API_KEY environment variable before running the mcp server.`);
+    }
+
     // Load and parse OpenAPI spec
     const openApiSpec = await loadOpenApiSpec(OPENAPI_SPEC);
 

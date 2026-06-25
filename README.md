@@ -7,6 +7,31 @@ This project provides a Model Context Protocol (MCP) server for the [Mailjet API
 
 ## Quick Start
 
+### Execution through NPX
+
+The project is available on NPM and can be executed through NPX.
+
+In order to start the server locally, simply run the following command:
+```bash
+MAILJET_API_KEY="YOUR_api_key:YOUR_secret_key" npx mailjet-mcp-server
+```
+
+Most of the time, you can choose to take advantage your AI desktop app and link Mailjet MCP directly to it. In this case please add the following MCP config:
+```json
+"mcpServers": {
+   "mailjet": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mailjet/mailjet-mcp-server"
+      ],
+      "env": {
+        "MAILJET_API_KEY": "YOUR_api_key:YOUR_secret_key"
+      }
+   }
+}
+```
+
 ### Manual Installation
 1. Clone the repository:
    ```bash
@@ -83,6 +108,11 @@ Would you be able to make a chart with email delivery statistics for the past we
 ## Debugging
 
 The MCP server communicates over stdio, please refer to [Debugging](https://modelcontextprotocol.io/docs/tools/debugging) section of the Model Context Protocol.
+
+## Publishing
+
+This package is published on the Mailjet NPM registry. The Mailjet team is responsible for publishing new package updates.
+Feel free to create an issue if you noticed any divergence between the Github version and the NPM package available.
 
 ## License
 
