@@ -35,5 +35,6 @@ logs
 *.swp
 *.swo
 .DS_Store
+/ngrok.yml
 
 .npmrc
