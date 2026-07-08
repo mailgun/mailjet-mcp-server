@@ -1,7 +1,9 @@
 import assert from "node:assert";
-import { describe, it } from "node:test";
+import { describe, it, mock } from "node:test";
 
 import * as serverModule from "../src/mailjet-mcp.js";
+import https from "node:https";
+import EventEmitter from "node:events";
 
 // Mock OpenAPI spec for testing
 const mockOpenApiSpec = {
@@ -245,5 +247,67 @@ describe("openapiToZod", () => {
     );
     assert(zod);
     assert.strictEqual(zod._def.type, "object");
+  });
+});
+
+describe("makeMailjetRequest", () => {
+  const testApiKey =  "env_api_key";
+  const testSecretKey =  "env_secret_key";
+  const testApiKeys =  `${testApiKey}:${testSecretKey}`;
+  function createMockResponse(statusCode, dataString) {
+    const res = new EventEmitter();
+    res.statusCode = statusCode;
+
+    // Simulate the chunks of data coming in
+    process.nextTick(() => {
+      res.emit("data", Buffer.from(dataString));
+      res.emit("end");
+    });
+
+    return res;
+  }
+
+  function createMockRequest(statusCode, data) {
+    mock.method(https, "request", (options, callback) => {
+      const mockErrorPayload = JSON.stringify(data);
+      const mockRes = createMockResponse(statusCode, mockErrorPayload);
+      callback(mockRes);
+
+      // Return a mock request object
+      return {
+        on: () => {},
+        end: () => {}
+      };
+    });
+  }
+  const mockResponseData = JSON.stringify({ message: "success" });
+
+  it("should reject the request if the api keys are missing from user context and environment", async () => {
+    await assert.rejects(
+      serverModule.makeMailjetRequest("GET", "/v3/REST/message", {}, {}),
+      /API keys(.+)missing/
+    );
+  });
+  it("should reject with an error message on a failed API response", async () => {
+    const mockErrorPayload = JSON.stringify({ message: "Invalid API key" });
+    createMockRequest(401, mockErrorPayload);
+    await assert.rejects(
+      serverModule.makeMailjetRequest("GET", "/v3/REST/message", {}, {apiKey: testApiKey, secretKey: testSecretKey}),
+      /Mailjet API error:/
+    );
+  });
+  it("should use API keys from user context when provided", async () => {
+    createMockRequest(200, mockResponseData);
+    // Mock the underlying https.request to prevent a real network call
+    const userContext = { apiKey: "test_api_key", secretKey: "test_secret_key" };
+    await assert.doesNotReject(serverModule.makeMailjetRequest("GET", "/v3/REST/message", {}, userContext))
+  });
+  it("should use API key from environment variables if user context is empty", async () => {
+    process.env.MAILJET_API_KEY = testApiKeys;
+    createMockRequest(200, mockResponseData);
+    // Assuming a mock setup for https.request
+    await serverModule.makeMailjetRequest("GET", "/v3/REST/message", {}, {});
+    await assert.doesNotReject(serverModule.makeMailjetRequest("GET", "/v3/REST/message", {}));
+    delete process.env.MAILJET_API_KEY; // Clean up environment variable
   });
 });

@@ -20,8 +20,7 @@
   ],
   "exports": {
     ".": {
-      "import": "./src/index.js",
-      "require": "./src/index.js"
+      "import": "./src/index.js"
     }
   },
   "scripts": {
