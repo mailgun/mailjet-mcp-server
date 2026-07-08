@@ -434,6 +434,11 @@ export function appendQueryString(path, queryParams) {
   return `${path}?${queryString.toString()}`;
 }
 
+/**
+ * Returns request options for authenticated requests to Mailjet API
+ * @param {string=} sessionAuth - Session authentication token
+ * @returns Request options object
+ */
 const getRequestOptionsMCPForAuth = (sessionAuth) => {
   // Defaulting to environment variable for API_KEY if not provided as parameter
   const auth = Buffer.from(`${sessionAuth || API_KEY}`).toString("base64")
@@ -472,6 +477,7 @@ export async function makeMailjetRequest(method, path, data = null, userContext 
 
     if (!API_KEY) {
       reject(`API keys are missing from user context and environment.`);
+      return;
     }
 
     const options = {
@@ -493,7 +499,6 @@ export async function makeMailjetRequest(method, path, data = null, userContext 
           const parsedData = JSON.parse(responseData);
           if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
             resolve(parsedData);
-
           } else {
             reject(new Error(`Mailjet API error: ${parsedData.message || responseData}`));
           }
@@ -564,9 +569,13 @@ export async function validateMailjetKeys(credentials) {
         });
       });
 
+      req.on("error", (err) => {
+        // Catch network errors (e.g., DNS failure, no internet connection)
+        reject(`${err}\nNetwork unavailable. Credentials can not be validated.`);
+      });
+
       req.end();
     } catch (error) {
-      // Catch network errors (e.g., DNS failure, no internet connection)
       reject(error)
     }
   })
@@ -659,12 +668,8 @@ export async function main() {
       throw new Error(`⚠️  Please provide a valid MAILJET_API_KEY environment variable before running the mcp server.`);
     }
 
-    try {
-      // Generate tools from the spec
-      generateToolsFromOpenApi(parsedOpenApiSpec);
-    } catch (/** @type { any } */ error) {
-      throw Error(error);
-    }
+    // Generate tools from the spec
+    generateToolsFromOpenApi(parsedOpenApiSpec);
 
     // Connect to the transport
     const transport = new StdioServerTransport();
