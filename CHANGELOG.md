@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Module Architecture**:
   - Created `src/index.js` as the primary entry point, exporting core MCP and OpenAPI schema logic.
-  - Added an `"exports"` block to `package.json` to support external `import` and `require`.
+  - Added an `"exports"` block to `package.json` to support external `import`.
   - Implemented security to prevent auto-execution when `mailjet-mcp.js` is imported as a library.
   - Added tests for `makeMailjetRequest`, asserting that it correctly uses parameters and environment variable.
 - **Tooling & Housekeeping**:
