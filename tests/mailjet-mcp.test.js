@@ -267,16 +267,19 @@ describe("makeMailjetRequest", () => {
     return res;
   }
 
-  function createMockRequest(statusCode, data) {
-    mock.method(https, "request", (options, callback) => {
-      const mockErrorPayload = JSON.stringify(data);
-      const mockRes = createMockResponse(statusCode, mockErrorPayload);
+  function createMockRequest(statusCode, payload) {
+    // Prevent previous tests from creating board effects
+    mock.restoreAll();
+    mock.method(https, "request", (_options, callback) => {
+      const body = typeof payload === "string" ? payload : JSON.stringify(payload);
+      const mockRes = createMockResponse(statusCode, body);
       callback(mockRes);
 
       // Return a mock request object
       return {
         on: () => {},
-        end: () => {}
+        write: () => {},
+        end: () => {},
       };
     });
   }

@@ -12,8 +12,9 @@ import packageInfo from "../package.json" with { type: "json" };
 
 const __dirname = import.meta.dirname;
 
+const isLocalUse = !!process.argv[1] && resolve(process.argv[1]) === import.meta.filename;
 // Identify if the file is currently imported by another project, which should prevent from firing main
-const isImported = process.argv[1] !== import.meta.filename;
+const isImported = !isLocalUse;
 export const mcpVersion = packageInfo.version
 // Headers that will be used to identify MCP as a source for Mailjet request generated, considering we will serve imported version through http
 export const mcpRequestHeaders = {
@@ -34,8 +35,6 @@ const API_HOSTNAME = `api.${API_REGION ? `${API_REGION}.` : ""}mailjet.com`;
 const OPENAPI_SPEC = resolve(__dirname, "openapi-mailjet.yaml");
 // Load and parse OpenAPI spec
 const openApiSpec = await loadOpenApiSpec(OPENAPI_SPEC);
-
-export const parsedOpenApiSpec = MailjetApiSchema.parse(openApiSpec);
 
 /**
  * Extracts all endpoints from the OpenAPI specification and organizes them by HTTP method.
@@ -508,8 +507,8 @@ export async function makeMailjetRequest(method, path, data = null, userContext 
       });
     });
 
-    req.on("error", (error) => {
-      reject(error);
+    req.on("error", (err) => {
+      reject(`${err}\nNetwork unavailable. Credentials can not be validated.`);
     });
 
     // For non-GET requests, serialize and send the form data
@@ -544,6 +543,7 @@ export async function validateMailjetKeys(credentials) {
     // Ensure the credentials string exists and is properly formatted
     if (!credentials || typeof credentials !== 'string' || !credentials.includes(':')) {
       resolve(false);
+      return
     }
 
     try {
@@ -566,6 +566,10 @@ export async function validateMailjetKeys(credentials) {
           } else {
             resolve(false);
           }
+        });
+
+        req.on("error", (err) => {
+          reject(`${err}\nNetwork unavailable. Credentials can not be validated.`);
         });
       });
 
@@ -662,6 +666,8 @@ export function generateToolsFromOpenApi(openApiSpec, serverInstance = server, u
  */
 export async function main() {
   try {
+    const parsedOpenApiSpec = MailjetApiSchema.parse(openApiSpec);
+
     const isValidApiKey = await validateMailjetKeys(API_KEY)
 
     if (!API_KEY || !isValidApiKey) {

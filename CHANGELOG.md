@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated `generateToolsFromOpenApi`, `registerTool`, and `makeMailjetRequest` to accept dynamic `serverInstance` and `userContext` parameters.
   - Fixed an unhandled exception in `makeMailjetRequest` by using `reject()` instead of throwing an error directly inside the Promise constructor.
 - **Configuration & Metadata**:
-  - Extracted and exported `OPENAPI_SPEC`, `mcpVersion`, and `mcpRequestHeaders`.
+  - Extracted and exported `mcpVersion` and `mcpRequestHeaders`.
   - Updated the standard `User-Agent` header from `STDIO` to `HTTP` when used through external project.
 
 ## [1.0.3] - 2026-06-25
