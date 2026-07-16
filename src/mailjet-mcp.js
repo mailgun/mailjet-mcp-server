@@ -35,6 +35,7 @@ const API_HOSTNAME = `api.${API_REGION ? `${API_REGION}.` : ""}mailjet.com`;
 const OPENAPI_SPEC = resolve(__dirname, "openapi-mailjet.yaml");
 // Load and parse OpenAPI spec
 const openApiSpec = await loadOpenApiSpec(OPENAPI_SPEC);
+export const parsedOpenApiSpec = MailjetApiSchema.parse(openApiSpec);
 
 /**
  * Extracts all endpoints from the OpenAPI specification and organizes them by HTTP method.
@@ -666,8 +667,6 @@ export function generateToolsFromOpenApi(openApiSpec, serverInstance = server, u
  */
 export async function main() {
   try {
-    const parsedOpenApiSpec = MailjetApiSchema.parse(openApiSpec);
-
     const isValidApiKey = await validateMailjetKeys(API_KEY)
 
     if (!API_KEY || !isValidApiKey) {

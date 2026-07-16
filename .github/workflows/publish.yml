@@ -24,6 +24,34 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Determine npm Distribution Tag
+        id: determine_tag
+        # Define the dynamic context variable safely as an environment variable
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          # Use bash syntax to store release tag from the environment variable without risking command injection
+          TAG_NAME="$RELEASE_TAG"
+          echo "Processing release tag: $TAG_NAME"
+
+          # Sanitization ensure only tag version characters are being used
+          SANITIZED_TAG=$(echo "$TAG_NAME" | sed 's/[^a-zA-Z0-9._-]//g')
+          echo "Sanitized tag: $SANITIZED_TAG"
+
+          # Determine the distribution tag using regexp
+          if [[ "$SANITIZED_TAG" =~ -(beta|alpha|rc) ]]; then
+            # Extract the specific pre-release keyword (e.g., "beta" or "alpha")
+            DIST_TAG="${BASH_REMATCH}"
+          else
+            # Default fallback for standard production releases
+            DIST_TAG="latest"
+          fi
+
+          echo "NPM distribution tag determined: $DIST_TAG"
+          echo "npm_tag=$DIST_TAG" >> $GITHUB_OUTPUT
+
       - name: Run package publishing on NPM
+        env:
+          NPM_DIST_TAG: ${{ steps.determine_tag.outputs.npm_tag }}
         # --provenance is needed for OIDC handshakes while using NPM Trusted Publishing
-        run: npm publish --access public --provenance
+        run: echo "Publishing tag-> $NPM_DIST_TAG" && npm publish --access public --provenance --tag "$NPM_DIST_TAG"
