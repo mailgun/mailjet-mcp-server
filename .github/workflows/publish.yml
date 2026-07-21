@@ -1,19 +1,16 @@
 name: Run Publish
 
 on:
-  release:
-    types:
-      - created
-
-# Required to mint the OIDC token for NPM Trusted Publishing
-permissions:
-  contents: read
-  id-token: write
+  workflow_dispatch:
 
 jobs:
   publish:
     name: Publish
     runs-on: ubuntu-latest
+    # Required to mint the OIDC token for NPM Trusted Publishing
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout repository
@@ -24,34 +21,44 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Determine npm Distribution Tag
-        id: determine_tag
-        # Define the dynamic context variable safely as an environment variable
-        env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+      - name: Display tag to be published and ensure it is bumped in package.json
+        id: verify_bump
         run: |
-          # Use bash syntax to store release tag from the environment variable without risking command injection
-          TAG_NAME="$RELEASE_TAG"
-          echo "Processing release tag: $TAG_NAME"
+          # Read the name and version directly from package.json
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          
+          echo "Target Package: $PACKAGE_NAME"
+          echo "Target Version: $PACKAGE_VERSION"
 
-          # Sanitization ensure only tag version characters are being used
-          SANITIZED_TAG=$(echo "$TAG_NAME" | sed 's/[^a-zA-Z0-9._-]//g')
-          echo "Sanitized tag: $SANITIZED_TAG"
+          # Query NPM to see if this exact version is already published.
+          # We use '2>/dev/null' to suppress the error if the package has NEVER been published before (404).
+          PUBLISHED_VERSION=$(npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version 2>/dev/null || echo "")
 
-          # Determine the distribution tag using regexp
-          if [[ "$SANITIZED_TAG" =~ -(beta|alpha|rc) ]]; then
-            # Extract the specific pre-release keyword (e.g., "beta" or "alpha")
-            DIST_TAG="${BASH_REMATCH}"
+          # Check if NPM returned the exact version
+          if [ "$PUBLISHED_VERSION" == "$PACKAGE_VERSION" ]; then
+            echo "❌ ERROR: Version $PACKAGE_VERSION of $PACKAGE_NAME is already published on npm!"
+            echo "You must bump the version in package.json before releasing."
+            exit 1 # Failing this step safely stops the entire job
           else
-            # Default fallback for standard production releases
-            DIST_TAG="latest"
+            echo "✅ Version $PACKAGE_VERSION is completely new. Ready for release!"
           fi
 
-          echo "NPM distribution tag determined: $DIST_TAG"
-          echo "npm_tag=$DIST_TAG" >> $GITHUB_OUTPUT
+      - name: Determine npm Distribution Tag and publish
+        # Protection to explicitly relies on the manual button trigger, skipping when testing on branch
+        if: ${{ success() && github.event_name == 'workflow_dispatch' }}
+        id: determine_tag
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          echo "Processing release tag: $PACKAGE_VERSION"
 
-      - name: Run package publishing on NPM
-        env:
-          NPM_DIST_TAG: ${{ steps.determine_tag.outputs.npm_tag }}
-        # --provenance is needed for OIDC handshakes while using NPM Trusted Publishing
-        run: echo "Publishing tag-> $NPM_DIST_TAG" && npm publish --access public --provenance --tag "$NPM_DIST_TAG"
+          # Determine the distribution tag using regexp
+          if [[ "$PACKAGE_VERSION" =~ -(beta|alpha|rc) ]]; then
+            # Extract the actual keyword without the leading hyphen (e.g., "beta" instead of "-beta")
+            NPM_DIST_TAG="${BASH_REMATCH[1]}"
+          else
+            NPM_DIST_TAG="latest"
+          fi
+
+          echo "Publishing tag-> $NPM_DIST_TAG"
+          npm publish --access public --provenance --tag "$NPM_DIST_TAG"
