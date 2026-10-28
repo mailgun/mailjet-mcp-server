@@ -91,23 +91,35 @@ describe("processPathParameters", () => {
 });
 
 describe("separateParameters", () => {
-  const operation = {
-    parameters: [
-      { name: "q", in: "query", schema: { type: "string" }, required: false },
-      { name: "body", in: "body", schema: { type: "string" }, required: false },
-    ],
-  };
-  it("should separate query and body params for POST", () => {
-    const params = { q: "abc", body: "val", extra: 1 };
-    const { queryParams, bodyParams } = serverModule.separateParameters(params, operation, "POST");
-    assert.deepStrictEqual(queryParams, { q: "abc" });
-    assert.deepStrictEqual(bodyParams, { body: "val", extra: 1 });
-  });
   it("should move all params to query for GET", () => {
+    const operation = {
+      parameters: [{ name: "q", in: "query", schema: { type: "string" }, required: false }],
+    };
     const params = { q: "abc", body: "val", extra: 1 };
     const { queryParams, bodyParams } = serverModule.separateParameters(params, operation, "GET");
     assert.deepStrictEqual(queryParams, { q: "abc", body: "val", extra: 1 });
     assert.deepStrictEqual(bodyParams, {});
+  });
+
+  it("should send everything as body for POST/PUT/DELETE when the operation has no requestBody (real Mailjet spec shape: fields are declared 'in: query' but there is no requestBody anywhere in the spec)", () => {
+    const operation = {
+      parameters: [{ name: "Name", in: "query", schema: { type: "string" }, required: false }],
+    };
+    const params = { Name: "test action MCP", extra: 1 };
+    const { queryParams, bodyParams } = serverModule.separateParameters(params, operation, "POST");
+    assert.deepStrictEqual(queryParams, {});
+    assert.deepStrictEqual(bodyParams, { Name: "test action MCP", extra: 1 });
+  });
+
+  it("should still separate on declared query params for non-GET methods when a requestBody is present", () => {
+    const operation = {
+      parameters: [{ name: "q", in: "query", schema: { type: "string" }, required: false }],
+      requestBody: { content: { "application/json": { schema: { type: "object", properties: {} } } } },
+    };
+    const params = { q: "abc", body: "val" };
+    const { queryParams, bodyParams } = serverModule.separateParameters(params, operation, "POST");
+    assert.deepStrictEqual(queryParams, { q: "abc" });
+    assert.deepStrictEqual(bodyParams, { body: "val" });
   });
 });
 
