@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { default as titleMapping } from "./titleOperationMapping.json" with { type: "json" };
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import yaml from "js-yaml";
 import https from "node:https";
@@ -37,6 +38,16 @@ const OPENAPI_SPEC = resolve(__dirname, "openapi-mailjet.yaml");
 const openApiSpec = await loadOpenApiSpec(OPENAPI_SPEC);
 export const parsedOpenApiSpec = MailjetApiSchema.parse(openApiSpec);
 
+
+// These endpoints are not supported by the MCP server on purpose, mainly for security/data privacy reasons
+const unsupportedEndpoints = [
+  {verb: "GET", path: "/v3/REST/apikey"},
+  {verb: "GET", path: "/v3/REST/apikey/{apikey_ID}"},
+]
+
+// Only allow GET for now, as other methods may have security implications
+const supportedMethods = ["GET"]
+
 /**
  * Extracts all endpoints from the OpenAPI specification and organizes them by HTTP method.
  *
@@ -61,21 +72,14 @@ function extractEndpoints(openApiSpec) {
     Object.keys(paths).forEach((path) => {
       const pathItem = paths[path];
 
-      // Check for each HTTP method
-      if (pathItem.get) {
-        endpoints.GET.push(path);
-      }
-      if (pathItem.post) {
-        endpoints.POST.push(path);
-      }
-      if (pathItem.put) {
-        endpoints.PUT.push(path);
-      }
-      if (pathItem.delete) {
-        endpoints.DELETE.push(path);
+      // Check for each HTTP method, skipping endpoints that are explicitly unsupported
+      for (const verb of supportedMethods) {
+        const isUnsupported = unsupportedEndpoints.some(e => e.verb === verb && e.path === path);
+        if (pathItem[verb.toLowerCase()] && !isUnsupported) {
+          endpoints[verb].push(path);
+        }
       }
     });
-
     return endpoints;
   } catch (error) {
     console.error("Error extracting endpoints:", error);
@@ -128,16 +132,31 @@ export function getOperationDetails(openApiSpec, method, path) {
   const lowerMethod = method.toLowerCase();
 
   // @ts-ignore lowercased string loses type info
-  if (!openApiSpec.paths?.[path]?.[lowerMethod]) {
+  const operation = openApiSpec.paths?.[path]?.[lowerMethod];
+  if (!operation) {
     return null;
   }
 
+  // Title is extracted from the titleOperationMapping.json file, mapping endpoints to human-readable titles
+  const title = titleMapping[path];
+  const { operationId } = operation;
+
   return {
+    metadata: {
+      // Flags true only for HTTP DELETE
+      destructiveHint: lowerMethod === 'delete',
+      // Safely handles idempotency for HTTP retries
+      idempotentHint: ['get', 'put', 'delete'].includes(lowerMethod),
+      // Always false because Mailjet endpoints strictly query/manipulate local Mailjet database records
+      openWorldHint: false,
+      // Flags true if http verb is GET indicating a read-only operation
+      readOnlyHint: lowerMethod === 'get',
+      title,
+    },
     /** @type {NonNullable<z.infer<typeof MailjetApiSchema>["paths"][string]["delete" | "get" | "post" | "put"]>} */
-    // @ts-ignore We know this exists because of the if condition above
-    operation: openApiSpec.paths[path][lowerMethod],
+    operation,
     operationId:
-      openApiSpec.paths[path]["get"]?.operationId ??
+      operationId ??
       `${method}-${sanitizeToolId(path).replace(/-+/g, "-")}`,
   };
 }
@@ -340,7 +359,6 @@ export function buildParamsSchema(operation, openApiSpec) {
   if (operation?.requestBody) {
     processRequestBody(operation.requestBody, paramsSchema, openApiSpec);
   }
-
   return paramsSchema;
 }
 
@@ -403,10 +421,17 @@ export function separateParameters(params, operation, method) {
     }
   }
 
-  // For GET requests, move all params to query
-  if (method.toUpperCase() === "GET") {
+  const upperMethod = method.toUpperCase();
+
+  if (upperMethod === "GET") {
+    // GET requests: everything is a query filter.
     Object.assign(queryParams, bodyParams);
     Object.keys(bodyParams).forEach((key) => delete bodyParams[key]);
+  } else if (!operation.requestBody) {
+    // Mailjet's OpenAPI spec never declares a requestBody for write operations, treat every
+    // parameter as a JSON body content for non-GET methods, matching Mailjet's actual REST API.
+    Object.assign(bodyParams, queryParams);
+    Object.keys(queryParams).forEach((key) => delete queryParams[key]);
   }
 
   return { queryParams, bodyParams };
@@ -480,11 +505,21 @@ export async function makeMailjetRequest(method, path, data = null, userContext 
       return;
     }
 
+    const hasBody = !!data && method !== "GET" && Object.keys(data).length > 0;
+    const body = hasBody ? JSON.stringify(data) : null;
+
     const options = {
       ...getRequestOptionsMCPForAuth(API_KEY),
       path: `/${cleanPath}`,
       method,
     };
+
+    if (body) {
+      options.headers = {
+        ...options.headers,
+        "Content-Length": Buffer.byteLength(body),
+      };
+    }
 
     // Create and send the HTTP request
     const req = https.request(options, (res) => {
@@ -512,21 +547,9 @@ export async function makeMailjetRequest(method, path, data = null, userContext 
       reject(`${err}\nNetwork unavailable. Credentials can not be validated.`);
     });
 
-    // For non-GET requests, serialize and send the form data
-    if (data && method !== "GET") {
-      // Convert object to URL encoded form data
-      const formData = new URLSearchParams();
-      for (const [key, value] of Object.entries(data)) {
-        if (Array.isArray(value)) {
-          for (const item of value) {
-            formData.append(key, item);
-          }
-        } else if (value !== undefined && value !== null) {
-          formData.append(key, value.toString());
-        }
-      }
-
-      req.write(formData.toString());
+    // For non-GET requests, send the JSON-serialized body (matches the "Content-Type: application/json" header)
+    if (body) {
+      req.write(body);
     }
 
     req.end();
@@ -596,9 +619,16 @@ export async function validateMailjetKeys(credentials) {
  * @param {NonNullable<ReturnType<typeof getOperationDetails>>['operation']} operation - OpenAPI operation object
  * @param serverInstance - MCP server instance to register the tool on (defaults to main server)
  * @param {UserContext} [userContext={}] - Optional User context containing credentials
+ * @param {import("@modelcontextprotocol/sdk/types.js").ToolAnnotations} [annotations={}] - MCP tool annotations (title, behavior hints)
  */
-export function registerTool(toolId, toolDescription, paramsSchema, method, path, operation, serverInstance = server, userContext = {}) {
-  serverInstance.tool(toolId, toolDescription, paramsSchema, async (params) => {
+export function registerTool(toolId, toolDescription, paramsSchema, method, path, operation, serverInstance = server, userContext = {}, annotations = {}) {
+  // `title` is set at the top level (what clients display) and kept in annotations for clients that only read that
+  serverInstance.registerTool(toolId, {
+    title: annotations.title,
+    description: toolDescription,
+    inputSchema: paramsSchema,
+    annotations,
+  }, async (params) => {
     try {
       const { actualPath, remainingParams } = processPathParameters(path, operation, params);
       const { queryParams, bodyParams } = separateParameters(remainingParams, operation, method);
@@ -641,23 +671,26 @@ export function registerTool(toolId, toolDescription, paramsSchema, method, path
  */
 export function generateToolsFromOpenApi(openApiSpec, serverInstance = server, userContext = {}) {
   const endpoints = extractEndpoints(openApiSpec);
-  for (const path of endpoints.GET) {
-    const method = "GET";
-    try {
-      const operationDetails = getOperationDetails(openApiSpec, method, path);
-      if (!operationDetails) {
-        console.warn(`Could not match endpoint: ${method} ${path} in OpenAPI spec`);
-        continue;
+
+  for (const method of /** @type {const} */ (supportedMethods)) {
+    for (const path of endpoints[method]) {
+      try {
+        const operationDetails = getOperationDetails(openApiSpec, method, path);
+        if (!operationDetails) {
+          console.warn(`Could not match endpoint: ${method} ${path} in OpenAPI spec`);
+          continue;
+        }
+
+        const { metadata: annotations, operation, operationId } = operationDetails;
+        const paramsSchema = buildParamsSchema(operation, openApiSpec);
+
+        const toolId = sanitizeToolId(operationId);
+        const toolDescription = operation?.summary || `${method.toUpperCase()} ${path}`;
+        registerTool(toolId, toolDescription, paramsSchema, method, path, operation, serverInstance, userContext, annotations);
+
+      } catch (/** @type {any} */ error) {
+        console.error(`Failed to process endpoint ${method} ${path}: ${error.message}`);
       }
-
-      const { operation, operationId } = operationDetails;
-      const paramsSchema = buildParamsSchema(operation, openApiSpec);
-      const toolId = sanitizeToolId(operationId);
-      const toolDescription = operation?.summary || `${method.toUpperCase()} ${path}`;
-
-      registerTool(toolId, toolDescription, paramsSchema, method, path, operation, serverInstance, userContext);
-    } catch (/** @type {any} */ error) {
-      console.error(`Failed to process endpoint ${method} ${path}: ${error.message}`);
     }
   }
 }
@@ -668,14 +701,11 @@ export function generateToolsFromOpenApi(openApiSpec, serverInstance = server, u
 export async function main() {
   try {
     const isValidApiKey = await validateMailjetKeys(API_KEY)
-
     if (!API_KEY || !isValidApiKey) {
       throw new Error(`⚠️  Please provide a valid MAILJET_API_KEY environment variable before running the mcp server.`);
     }
-
     // Generate tools from the spec
     generateToolsFromOpenApi(parsedOpenApiSpec);
-
     // Connect to the transport
     const transport = new StdioServerTransport();
     await server.connect(transport);

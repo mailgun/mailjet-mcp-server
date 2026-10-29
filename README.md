@@ -90,6 +90,22 @@ Run the local test suite with:
 NODE_ENV=test pnpm test
 ```
 
+### Inspecting the server with MCP Inspector
+
+[MCP Inspector](https://github.com/modelcontextprotocol/inspector) lets you list the tools, call them and read the raw protocol messages.
+
+The server communicates over stdio, so the Inspector starts it for you. Run:
+
+```bash
+MAILJET_API_KEY="YOUR_api_key:YOUR_secret_key" pnpm inspect
+```
+
+The script forwards `MAILJET_API_KEY` from your shell to the server with the Inspector's `-e` flag. The Inspector does not pass your shell environment to the server it starts, so without it the server exits with `Please provide a valid MAILJET_API_KEY`. You can also set the variable in the **Environment Variables** field of the server settings in the Inspector UI.
+
+Then open the URL printed in the terminal, click **Connect**, and use the **Tools** tab to list and call tools.
+
+The Inspector runs a local proxy protected by a session token. Only run it on your own machine and do not expose its port.
+
 
 ### Sample Prompts with Claude
 

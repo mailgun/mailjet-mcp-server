@@ -6,7 +6,7 @@ const methodParams = z.object({
   name: z.string(),
   in: z.string(),
   required: z.boolean().optional(),
-  schema: z.object({ type: z.string() }),
+  schema: z.object({ type: z.string().optional() }).catchall(z.any()),
   $ref: z.string().optional(),
 });
 const reqBodyContent = z.record(
@@ -60,4 +60,6 @@ export const MailjetApiSchema = z.object({
       description: z.string().optional(),
     }),
   ),
+  // Targets of the $ref pointers used by parameters and request bodies
+  components: z.object({}).catchall(z.any()).optional(),
 });
