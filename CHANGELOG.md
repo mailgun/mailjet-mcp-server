@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-10-29
+
+### Added
+
+- **Marketplace Readiness**:
+  - Added MCP tool annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) derived from the HTTP verb, and updated `registerTool` and the related registration functions to accept an `annotations` parameter.
+  - Added `src/titleOperationMapping.json`, mapping each endpoint to a human-readable tool title, exposed at the top level of each tool and kept in its annotations.
+  - Added an unsupported endpoints list, filtering out endpoints that must not be exposed (security and data privacy) when tools are generated.
+- **Write Operations Groundwork**:
+  - Prepared the structure for accepting `POST`, `PUT` and `DELETE` tools in the future; non-GET parameters are sent as a JSON body.
+  - Added tests for request body parameters handling.
+- **Tooling & Documentation**:
+  - Added an `inspect` script to test the server through MCP Inspector, forwarding `MAILJET_API_KEY` to the server it starts.
+  - Documented the MCP Inspector usage in the `README.md`.
+
+### Changed
+
+- **OpenAPI Specification**:
+  - Updated `openapi-mailjet.yaml` to the latest version of the Mailjet API specification.
+  - Updated the Zod schemas in `mailjet-openapi-schema.js` to match the new structure: parameter schemas may now be `$ref` pointers, so `type` is optional and extra keys (such as `items`, `enum`, `minimum`) are preserved, and `components` is now kept so that references resolve.
+
+### Fixed
+
+- **Schema Portability**:
+  - Array query parameters (such as `SourceIDs`) keep their `items` type instead of being turned into an unconstrained schema, removing the portability warning displayed by MCP Inspector.
+
 ## [1.1.0] - 2026-07-08
 
 ### Added
